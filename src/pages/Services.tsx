@@ -1,0 +1,147 @@
+import { Code2, Cpu, Wrench, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
+const Services = () => {
+  const services = [
+    {
+      icon: Code2,
+      title: "Web App Development",
+      subtitle: "Build custom web applications from scratch",
+      description: "We create fully functional, scalable web applications tailored to your unique business needs. From concept to deployment, we handle every aspect of development.",
+      benefits: [
+        "Custom-built solutions aligned with your goals",
+        "Modern tech stack (React, Node.js, PostgreSQL)",
+        "Mobile-responsive design",
+        "API development and third-party integrations",
+        "Comprehensive testing and QA",
+        "Deployment and launch support",
+      ],
+    },
+    {
+      icon: Wrench,
+      title: "Feature Expansion",
+      subtitle: "Add new functionalities or optimize existing systems",
+      description: "Already have an application? We can enhance it with new features, improve performance, and modernize outdated code to keep your product competitive.",
+      benefits: [
+        "Code audits and technical assessments",
+        "Feature planning and roadmap development",
+        "Performance optimization",
+        "Database redesign and migration",
+        "Legacy system modernization",
+        "Seamless integration with existing workflows",
+      ],
+    },
+    {
+      icon: Cpu,
+      title: "AI Strategy & Integration",
+      subtitle: "Leverage AI to streamline operations and unlock opportunities",
+      description: "We help you identify where AI can make the biggest impact in your business, then design and implement practical solutions that deliver real results.",
+      benefits: [
+        "AI readiness assessment",
+        "Use case identification and ROI analysis",
+        "Custom AI solution design",
+        "Integration with existing systems",
+        "Training and documentation",
+        "Ongoing support and optimization",
+      ],
+    },
+    {
+      icon: Wrench,
+      title: "Technical Strategy & Maintenance",
+      subtitle: "Long-term support to keep your systems running smoothly",
+      description: "Technology is never \"set it and forget it.\" We provide ongoing maintenance, monitoring, and strategic guidance to ensure your applications scale with your business.",
+      benefits: [
+        "24/7 monitoring and uptime management",
+        "Regular security updates and patches",
+        "Performance monitoring and optimization",
+        "Backup and disaster recovery",
+        "Strategic technical planning",
+        "Priority support",
+      ],
+    },
+  ];
+
+  return (
+    <div className="min-h-screen pt-20">
+      {/* Hero Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 circuit-pattern opacity-50" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center animate-fade-in">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+              Services That Scale With You
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              From initial development to long-term growth, we provide the technical expertise you need at every stage.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Detail */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="space-y-24">
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className={`grid md:grid-cols-2 gap-12 items-center ${
+                  index % 2 === 1 ? "md:flex-row-reverse" : ""
+                }`}
+              >
+                <div className={`space-y-6 ${index % 2 === 1 ? "md:order-2" : ""}`}>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <service.icon className="h-8 w-8 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-display font-bold">{service.title}</h2>
+                      <p className="text-muted-foreground">{service.subtitle}</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-lg text-muted-foreground">{service.description}</p>
+                  
+                  <div className="space-y-3">
+                    {service.benefits.map((benefit, i) => (
+                      <div key={i} className="flex items-start space-x-3">
+                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-muted-foreground">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button asChild size="lg" className="mt-6">
+                    <Link to="/contact">Get Started</Link>
+                  </Button>
+                </div>
+                
+                <div className={`bg-muted rounded-2xl h-80 flex items-center justify-center ${index % 2 === 1 ? "md:order-1" : ""}`}>
+                  <service.icon className="h-32 w-32 text-muted-foreground/20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
+            Not Sure Where to Start?
+          </h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-primary-foreground/90">
+            Book a free consultation and we'll help you identify the best path forward for your business.
+          </p>
+          <Button asChild size="lg" variant="secondary">
+            <Link to="/contact">Book a Consultation</Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Services;
