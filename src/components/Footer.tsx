@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Linkedin, Twitter, Mail } from "lucide-react";
-import NewsletterSignup from "./NewsletterSignup";
 
 const Footer = () => {
   return (
@@ -10,7 +9,15 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="md:col-span-2">
             <Link to="/" className="inline-block mb-4">
-              <h3 className="text-2xl font-display font-bold">ND Scalesmart</h3>
+              <div className="flex items-center gap-3">
+                <div className="bg-secondary text-secondary-foreground font-display font-bold text-xl px-3 py-2 rounded">
+                  ND
+                </div>
+                <div>
+                  <h3 className="text-2xl font-display font-bold">ND Scalesmart</h3>
+                  <p className="text-xs text-primary-foreground/70">Tech Strategy & Development</p>
+                </div>
+              </div>
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               AI-driven web development and tech strategy for small businesses. 
@@ -80,10 +87,16 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Get In Touch */}
           <div>
-            <h4 className="font-display font-semibold mb-4">Stay Updated</h4>
-            <NewsletterSignup />
+            <h4 className="font-display font-semibold mb-4">Get In Touch</h4>
+            <a
+              href="mailto:solutions@ndscalesmart.com"
+              className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              <span>solutions@ndscalesmart.com</span>
+            </a>
           </div>
         </div>
 
