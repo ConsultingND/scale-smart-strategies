@@ -19,6 +19,9 @@ const Contact = () => {
     projectType: "",
     message: "",
     aiQuestion: "",
+    aiQuestion1: "",
+    aiQuestion2: "",
+    aiQuestion3: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +42,9 @@ const Contact = () => {
         projectType: "",
         message: "",
         aiQuestion: "",
+        aiQuestion1: "",
+        aiQuestion2: "",
+        aiQuestion3: "",
       });
       setIsLoading(false);
     }, 1500);
@@ -204,33 +210,33 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion">Where would AI save you or your team the most time?</Label>
+                  <Label htmlFor="aiQuestion1">Where would AI save you or your team the most time?</Label>
                   <Textarea
                     id="aiQuestion"
-                    value={formData.aiQuestion}
-                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    value={formData.aiQuestion1}
+                    onChange={(e) => handleChange("aiQuestion1", e.target.value)}
                     placeholder="e.g., Decision making, content creation..."
                     rows={4}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion">What aspect of your work could AI enhance the most?</Label>
+                  <Label htmlFor="aiQuestion2">What aspect of your work could AI enhance the most?</Label>
                   <Textarea
                     id="aiQuestion"
-                    value={formData.aiQuestion}
-                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    value={formData.aiQuestion2}
+                    onChange={(e) => handleChange("aiQuestion2", e.target.value)}
                     placeholder="e.g., Report generation, scheduling..."
                     rows={4}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion">What frustrating task would you want AI to solve?</Label>
+                  <Label htmlFor="aiQuestion3">What frustrating task would you want AI to solve?</Label>
                   <Textarea
                     id="aiQuestion"
-                    value={formData.aiQuestion}
-                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    value={formData.aiQuestion3}
+                    onChange={(e) => handleChange("aiQuestion3", e.target.value)}
                     placeholder="e.g., Manual data processing..."
                     rows={4}
                   />
