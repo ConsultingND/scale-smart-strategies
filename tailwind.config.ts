@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        'desktop': '850px',
+      },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Poppins', 'system-ui', 'sans-serif'],

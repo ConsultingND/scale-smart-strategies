@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin } from "lucide-react";
 
@@ -176,33 +177,67 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Project Details *</Label>
+                  <Label htmlFor="message">Tell Us About Your Project*</Label>
                   <Textarea
                     id="message"
                     value={formData.message}
                     onChange={(e) => handleChange("message", e.target.value)}
                     required
-                    placeholder="Tell us about your project, goals, and timeline..."
+                    placeholder="Describe your project, goals, timeline, and any specific requirements..."
                     rows={5}
                   />
                 </div>
 
+                <Separator className="my-8" />
+
+                <h3>AI Strategy Opportunity Questions</h3>
+
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion">AI Opportunity Question</Label>
+                  <Label htmlFor="aiQuestion">What aspect of your business could AI simplify right now?</Label>
                   <Textarea
                     id="aiQuestion"
                     value={formData.aiQuestion}
                     onChange={(e) => handleChange("aiQuestion", e.target.value)}
-                    placeholder="What aspect of your business could AI simplify or enhance right now? (Optional)"
-                    rows={3}
+                    placeholder="e.g., Customer support, data entry..."
+                    rows={4}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    This helps us understand where AI might provide the most value for your business.
-                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="aiQuestion">Where would AI save you or your team the most time?</Label>
+                  <Textarea
+                    id="aiQuestion"
+                    value={formData.aiQuestion}
+                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    placeholder="e.g., Decision making, content creation..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="aiQuestion">What aspect of your work could AI enhance the most?</Label>
+                  <Textarea
+                    id="aiQuestion"
+                    value={formData.aiQuestion}
+                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    placeholder="e.g., Report generation, scheduling..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="aiQuestion">What frustrating task would you want AI to solve?</Label>
+                  <Textarea
+                    id="aiQuestion"
+                    value={formData.aiQuestion}
+                    onChange={(e) => handleChange("aiQuestion", e.target.value)}
+                    placeholder="e.g., Manual data processing..."
+                    rows={4}
+                  />
                 </div>
 
                 <Button type="submit" size="lg" disabled={isLoading} className="w-full md:w-auto">
-                  {isLoading ? "Sending..." : "Send Message"}
+                  {isLoading ? "Sending..." : "Send Inquiry"}
                 </Button>
               </form>
             </div>

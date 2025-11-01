@@ -43,7 +43,7 @@ const Blog = () => {
     },
     {
       id: 5,
-      title: "Why I Started ND Scalesmart: From Corporate to Consulting",
+      title: "Why I Started ND Scale Smart: From Corporate to Consulting",
       excerpt: "The personal journey from enterprise software to helping small businesses scale smart.",
       category: "Authority / Pivot Story",
       date: "2023-12-20",

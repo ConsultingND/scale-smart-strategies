@@ -24,24 +24,24 @@ const NewsletterSignup = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3 flex flex-col items-center">
       <p className="text-sm text-primary-foreground/80">
         Subscribe for weekly insights and updates.
       </p>
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="space-x-2">
         <Input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+          className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 inline-block w-auto"
         />
         <Button
           type="submit"
           disabled={isLoading}
           variant="secondary"
-          className="whitespace-nowrap"
+          className="whitespace-nowrap inline-block"
         >
           {isLoading ? "Subscribing..." : "Subscribe"}
         </Button>

@@ -14,7 +14,7 @@ const Footer = () => {
                   ND
                 </div>
                 <div>
-                  <h3 className="text-2xl font-display font-bold">ND Scalesmart</h3>
+                  <h3 className="text-2xl font-display font-bold">ND Scale Smart</h3>
                   <p className="text-xs text-primary-foreground/70">Tech Strategy & Development</p>
                 </div>
               </div>
@@ -101,7 +101,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>&copy; {new Date().getFullYear()} ND Scalesmart. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ND Scale Smart. All rights reserved.</p>
         </div>
       </div>
     </footer>

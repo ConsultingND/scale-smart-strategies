@@ -28,7 +28,7 @@ const About = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center animate-fade-in">
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
-              About ND Scalesmart
+              About ND Scale Smart
             </h1>
             <p className="text-xl text-muted-foreground">
               Building bridges between ambitious ideas and scalable technology.
@@ -44,7 +44,7 @@ const About = () => {
             <div className="bg-card border rounded-2xl p-8 md:p-12 shadow-lg">
               <h2 className="text-3xl font-display font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                At ND Scalesmart, we believe every small business deserves access to world-class technology—without the enterprise price tag or overwhelming complexity.
+                At ND Scale Smart, we believe every small business deserves access to world-class technology—without the enterprise price tag or overwhelming complexity.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
                 We specialize in helping startups and growing businesses build fully functional, scalable web applications from the ground up. Whether you're launching your first product or expanding an existing platform, we provide the strategic guidance and technical expertise to make it happen.
@@ -86,7 +86,7 @@ const About = () => {
                 <h2 className="text-3xl font-display font-bold">Meet the Founder</h2>
                 <h3 className="text-xl font-semibold text-primary">Nahum Ducasse</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  With years of experience in software development and a passion for helping small businesses succeed, Nahum founded ND Scalesmart to make enterprise-level technology accessible to everyone.
+                  With years of experience in software development and a passion for helping small businesses succeed, Nahum founded ND Scale Smart to make enterprise-level technology accessible to everyone.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Having worked with startups across various industries, Nahum understands the unique challenges small businesses face when it comes to technology. His approach combines technical expertise with business acumen to deliver solutions that truly move the needle.

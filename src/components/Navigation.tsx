@@ -24,7 +24,7 @@ const Navigation = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="flex flex-col">
-              <span className="text-2xl font-display font-bold text-primary">ND Scalesmart</span>
+              <span className="text-2xl font-display font-bold text-primary">ND Scale Smart</span>
               <span className="text-xs text-muted-foreground">Start small. Scale smart.</span>
             </div>
           </Link>

@@ -27,7 +27,8 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="bg-gradient-to-br from-primary via-primary to-primary/90 py-16">
+    // bg-gradient-to-br from-primary via-primary to-primary/90 py-10 m-16 rounded-lg
+    <section className="bg-gradient-to-br from-[#0B1E3F] to-[#1a3a5f] py-10 m-16 rounded-lg">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           <div className="flex justify-center mb-6">
@@ -44,13 +45,13 @@ const NewsletterSection = () => {
             Subscribe for weekly insights on AI, web development, and scaling your business smartly.
           </p>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 desktop:space-y-0 desktop:space-x-2">
             <Input
               type="text"
               placeholder="Name (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
             />
             <Input
               type="email"
@@ -58,13 +59,13 @@ const NewsletterSection = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
             />
             <Button
               type="submit"
               disabled={isLoading}
               variant="secondary"
-              className="w-full"
+              className="w-full desktop:w-auto desktop:inline-block"
             >
               {isLoading ? "Subscribing..." : "Subscribe"}
             </Button>

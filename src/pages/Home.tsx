@@ -66,7 +66,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials / Social Proof */}
-      <section className="py-24">
+      {/* <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
@@ -78,7 +78,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-50">
-            {/* Placeholder for client logos */}
+            {/* Placeholder for client logos 
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
@@ -89,7 +89,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-24 bg-primary text-primary-foreground">

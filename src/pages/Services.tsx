@@ -1,4 +1,4 @@
-import { Code2, Cpu, Wrench, CheckCircle2 } from "lucide-react";
+import { Code2, Cpu, Wrench, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -8,23 +8,24 @@ const Services = () => {
       icon: Code2,
       title: "Web App Development",
       subtitle: "Build custom web applications from scratch",
-      description: "We create fully functional, scalable web applications tailored to your unique business needs. From concept to deployment, we handle every aspect of development.",
+      description: "We transform your vision into fully functional, scalable web applications. From concept to deployment, we handle every aspect of development.",
       benefits: [
         "Custom-built solutions aligned with your goals",
         "Modern tech stack (React, Node.js, PostgreSQL)",
         "Mobile-responsive design",
+        "Database architecture & optimization",
         "API development and third-party integrations",
         "Comprehensive testing and QA",
-        "Deployment and launch support",
+        "Cloud deployment, infrastructure, and launch support",
       ],
     },
     {
-      icon: Wrench,
+      icon: Sparkles,
       title: "Feature Expansion",
       subtitle: "Add new functionalities or optimize existing systems",
       description: "Already have an application? We can enhance it with new features, improve performance, and modernize outdated code to keep your product competitive.",
       benefits: [
-        "Code audits and technical assessments",
+        "Code refactoring and technical assessments",
         "Feature planning and roadmap development",
         "Performance optimization",
         "Database redesign and migration",
@@ -35,15 +36,15 @@ const Services = () => {
     {
       icon: Cpu,
       title: "AI Strategy & Integration",
-      subtitle: "Leverage AI to streamline operations and unlock opportunities",
-      description: "We help you identify where AI can make the biggest impact in your business, then design and implement practical solutions that deliver real results.",
+      subtitle: "Integrate AI intelligently to streamline operations",
+      description: "Move beyond the AI hype. We help you identify genuine AI opportunities and where AI can make the biggest impact in your business. Learn how to implement practical solutions, and train your team to leverage AI effectively for competitive advantage.",
       benefits: [
         "AI readiness assessment",
         "Use case identification and ROI analysis",
         "Custom AI solution design",
         "Integration with existing systems",
         "Training and documentation",
-        "Ongoing support and optimization",
+        "Data analysis & insights, with support and optimization",
       ],
     },
     {
@@ -86,14 +87,20 @@ const Services = () => {
             {services.map((service, index) => (
               <div
                 key={index}
-                className={`grid md:grid-cols-2 gap-12 items-center ${
+                className={`grid md:grid-cols-2 gap-12 items-center pl-8 ${
                   index % 2 === 1 ? "md:flex-row-reverse" : ""
                 }`}
               >
                 <div className={`space-y-6 ${index % 2 === 1 ? "md:order-2" : ""}`}>
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <service.icon className="h-8 w-8 text-primary" />
+                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                      index === 0 ? "bg-gradient-to-br from-blue-500 to-indigo-600" :
+                      index === 1 ? "bg-gradient-to-br from-purple-500 to-pink-600" :
+                      index === 2 ? "bg-gradient-to-br from-green-500 to-teal-600" :
+                      index === 3 ? "bg-gradient-to-br from-orange-500 to-red-600" :
+                      "bg-primary/10"
+                    }`}>
+                      <service.icon className="h-8 w-8 text-white" />
                     </div>
                     <div>
                       <h2 className="text-3xl font-display font-bold">{service.title}</h2>
@@ -103,7 +110,13 @@ const Services = () => {
                   
                   <p className="text-lg text-muted-foreground">{service.description}</p>
                   
-                  <div className="space-y-3">
+                  <Button asChild size="lg" className="mt-6">
+                    <Link to="/contact">Get Started</Link>
+                  </Button>
+                </div>
+                
+                <div className={`bg-muted rounded-2xl h-80 flex items-center justify-center p-6 ${index % 2 === 1 ? "md:order-1" : ""}`}>
+                  <div className="space-y-3 w-full">
                     {service.benefits.map((benefit, i) => (
                       <div key={i} className="flex items-start space-x-3">
                         <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
@@ -111,14 +124,6 @@ const Services = () => {
                       </div>
                     ))}
                   </div>
-                  
-                  <Button asChild size="lg" className="mt-6">
-                    <Link to="/contact">Get Started</Link>
-                  </Button>
-                </div>
-                
-                <div className={`bg-muted rounded-2xl h-80 flex items-center justify-center ${index % 2 === 1 ? "md:order-1" : ""}`}>
-                  <service.icon className="h-32 w-32 text-muted-foreground/20" />
                 </div>
               </div>
             ))}
