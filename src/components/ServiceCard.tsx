@@ -9,14 +9,15 @@ interface ServiceCardProps {
   title: string;
   description: string;
   features: string[];
+  iconBackground?: string;
 }
 
-const ServiceCard = ({ icon: Icon, title, description, features }: ServiceCardProps) => {
+const ServiceCard = ({ icon: Icon, title, description, features, iconBackground }: ServiceCardProps) => {
   return (
     <Card className="hover-lift h-full border-2 hover:border-primary/50 transition-all duration-300">
       <CardHeader>
-        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${iconBackground || "bg-primary/10"}`}>
+          <Icon className={`h-6 w-6 ${iconBackground ? "text-white" : "text-primary"}`} />
         </div>
         <CardTitle className="text-2xl">{title}</CardTitle>
         <CardDescription className="text-base">{description}</CardDescription>

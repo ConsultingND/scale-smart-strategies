@@ -14,6 +14,7 @@ const Home = () => {
         "Scalable architecture from day one",
         "API integrations and third-party services",
       ],
+      iconBackground: "bg-gradient-to-br from-blue-500 to-indigo-600",
     },
     {
       icon: Cpu,
@@ -25,6 +26,7 @@ const Home = () => {
         "Implementation and integration",
         "Training and ongoing support",
       ],
+      iconBackground: "bg-gradient-to-br from-green-500 to-teal-600",
     },
     {
       icon: Wrench,
@@ -36,6 +38,7 @@ const Home = () => {
         "Feature enhancements",
         "Strategic technical planning",
       ],
+      iconBackground: "bg-gradient-to-br from-orange-500 to-red-600",
     },
   ];
 
