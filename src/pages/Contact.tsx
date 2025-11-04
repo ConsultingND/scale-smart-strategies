@@ -22,6 +22,7 @@ const Contact = () => {
     aiQuestion1: "",
     aiQuestion2: "",
     aiQuestion3: "",
+    aiQuestion4: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,6 +46,7 @@ const Contact = () => {
         aiQuestion1: "",
         aiQuestion2: "",
         aiQuestion3: "",
+        aiQuestion4: "",
       });
       setIsLoading(false);
     }, 1500);
@@ -199,7 +201,7 @@ const Contact = () => {
                 <h3>AI Strategy Opportunity Questions</h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion">What aspect of your business could AI simplify right now?</Label>
+                  <Label htmlFor="aiQuestion">What aspect of your business could we help simplify right now?</Label>
                   <Textarea
                     id="aiQuestion"
                     value={formData.aiQuestion}
@@ -221,7 +223,7 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="aiQuestion2">What aspect of your work could AI enhance the most?</Label>
+                  <Label htmlFor="aiQuestion2">What aspect of your business needs the most improvement?</Label>
                   <Textarea
                     id="aiQuestion"
                     value={formData.aiQuestion2}
@@ -238,6 +240,17 @@ const Contact = () => {
                     value={formData.aiQuestion3}
                     onChange={(e) => handleChange("aiQuestion3", e.target.value)}
                     placeholder="e.g., Manual data processing..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="aiQuestion4">If you are looking for consultation, describe the problem you need help resolving?</Label>
+                  <Textarea
+                    id="aiQuestion"
+                    value={formData.aiQuestion4}
+                    onChange={(e) => handleChange("aiQuestion4", e.target.value)}
+                    placeholder="e.g., Tracking progress and measuring development success..."
                     rows={4}
                   />
                 </div>
