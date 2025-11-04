@@ -15,6 +15,7 @@ const Home = () => {
         "API integrations and third-party services",
       ],
       iconBackground: "bg-gradient-to-br from-blue-500 to-indigo-600",
+      link: "/services#web-app-development",
     },
     {
       icon: Cpu,
@@ -27,6 +28,7 @@ const Home = () => {
         "Training and ongoing support",
       ],
       iconBackground: "bg-gradient-to-br from-green-500 to-teal-600",
+      link: "/services#ai-strategy",
     },
     {
       icon: Wrench,
@@ -39,6 +41,7 @@ const Home = () => {
         "Strategic technical planning",
       ],
       iconBackground: "bg-gradient-to-br from-orange-500 to-red-600",
+      link: "/services#technical-strategy",
     },
     {
       icon: Users,
@@ -51,6 +54,7 @@ const Home = () => {
         "Building a weekly cadence and workflow",
       ],
       iconBackground: "bg-gradient-to-br from-purple-500 to-pink-600",
+      link: "/services#developer-vetting",
     },
   ];
 

@@ -1,10 +1,11 @@
-import { Code2, Cpu, Wrench, CheckCircle2, Sparkles } from "lucide-react";
+import { Code2, Cpu, Wrench, CheckCircle2, Sparkles, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Services = () => {
   const services = [
     {
+      id: "web-app-development",
       icon: Code2,
       title: "Web App Development",
       subtitle: "Build custom web applications from scratch",
@@ -20,6 +21,7 @@ const Services = () => {
       ],
     },
     {
+      id: "feature-expansion",
       icon: Sparkles,
       title: "Feature Expansion",
       subtitle: "Add new functionalities or optimize existing systems",
@@ -34,6 +36,7 @@ const Services = () => {
       ],
     },
     {
+      id: "ai-strategy",
       icon: Cpu,
       title: "AI Strategy & Integration",
       subtitle: "Integrate AI intelligently to streamline operations",
@@ -48,6 +51,7 @@ const Services = () => {
       ],
     },
     {
+      id: "technical-strategy",
       icon: Wrench,
       title: "Technical Strategy & Maintenance",
       subtitle: "Long-term support to keep your systems running smoothly",
@@ -59,6 +63,21 @@ const Services = () => {
         "Backup and disaster recovery",
         "Strategic technical planning",
         "Priority support",
+      ],
+    },
+    {
+      id: "developer-vetting",
+      icon: Users,
+      title: "Developer Vetting & Consulting",
+      subtitle: "Expert guidance for non-technical founders",
+      description: "Building a successful product requires more than just hiring developers—it requires knowing how to work with them effectively. We help non-technical founders navigate the technical landscape with confidence.",
+      benefits: [
+        "How to communicate effectively with your development team",
+        "Tools and frameworks to convey project details and requirements",
+        "Tracking progress and measuring development success",
+        "Building a weekly cadence and productive workflow",
+        "Vetting and interviewing technical candidates",
+        "Understanding technical proposals and estimates",
       ],
     },
   ];
@@ -87,7 +106,8 @@ const Services = () => {
             {services.map((service, index) => (
               <div
                 key={index}
-                className={`grid md:grid-cols-2 gap-12 items-center pl-8 ${
+                id={service.id}
+                className={`grid md:grid-cols-2 gap-12 items-center pl-8 scroll-mt-24 ${
                   index % 2 === 1 ? "md:flex-row-reverse" : ""
                 }`}
               >
@@ -98,6 +118,7 @@ const Services = () => {
                       index === 1 ? "bg-gradient-to-br from-purple-500 to-pink-600" :
                       index === 2 ? "bg-gradient-to-br from-green-500 to-teal-600" :
                       index === 3 ? "bg-gradient-to-br from-orange-500 to-red-600" :
+                      index === 4 ? "bg-gradient-to-br from-purple-500 to-pink-600" :
                       "bg-primary/10"
                     }`}>
                       <service.icon className="h-8 w-8 text-white" />
@@ -141,7 +162,7 @@ const Services = () => {
             Book a free consultation and we'll help you identify the best path forward for your business.
           </p>
           <Button asChild size="lg" variant="secondary">
-            <Link to="/contact">Book a Consultation</Link>
+            <Link to="/contact#top">Book a Consultation</Link>
           </Button>
         </div>
       </section>

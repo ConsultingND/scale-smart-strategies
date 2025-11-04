@@ -10,9 +10,10 @@ interface ServiceCardProps {
   description: string;
   features: string[];
   iconBackground?: string;
+  link?: string;
 }
 
-const ServiceCard = ({ icon: Icon, title, description, features, iconBackground }: ServiceCardProps) => {
+const ServiceCard = ({ icon: Icon, title, description, features, iconBackground, link = "/contact" }: ServiceCardProps) => {
   return (
     <Card className="hover-lift h-full border-2 hover:border-primary/50 transition-all duration-300">
       <CardHeader>
@@ -24,7 +25,7 @@ const ServiceCard = ({ icon: Icon, title, description, features, iconBackground 
       </CardHeader>
       <CardFooter>
         <Button asChild variant="ghost" className="group">
-          <Link to="/contact">
+          <Link to={link}>
             Learn More
             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
