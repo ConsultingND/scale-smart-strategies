@@ -73,11 +73,10 @@ const Services = () => {
       description: "Building a successful product requires more than just hiring developers—it requires knowing how to work with them effectively. We help non-technical founders navigate the technical landscape with confidence.",
       benefits: [
         "How to communicate effectively with your development team",
-        "Tools and frameworks to convey project details and requirements",
+        "Tools and frameworks to convey project details, requirements, technical proposals, and estimates",
         "Tracking progress and measuring development success",
         "Building a weekly cadence and productive workflow",
         "Vetting and interviewing technical candidates",
-        "Understanding technical proposals and estimates",
       ],
     },
   ];
@@ -106,8 +105,7 @@ const Services = () => {
             {services.map((service, index) => (
               <div
                 key={index}
-                id={service.id}
-                className={`grid md:grid-cols-2 gap-12 items-center pl-8 scroll-mt-24 ${
+                className={`grid md:grid-cols-2 gap-12 items-center pl-8 ${
                   index % 2 === 1 ? "md:flex-row-reverse" : ""
                 }`}
               >
@@ -124,7 +122,7 @@ const Services = () => {
                       <service.icon className="h-8 w-8 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-3xl font-display font-bold">{service.title}</h2>
+                      <h2 id={service.id} className="text-3xl font-display font-bold scroll-mt-24">{service.title}</h2>
                       <p className="text-muted-foreground">{service.subtitle}</p>
                     </div>
                   </div>
