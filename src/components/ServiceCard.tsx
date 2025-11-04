@@ -22,16 +22,6 @@ const ServiceCard = ({ icon: Icon, title, description, features, iconBackground 
         <CardTitle className="text-2xl">{title}</CardTitle>
         <CardDescription className="text-base">{description}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ul className="space-y-2">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-start">
-              <span className="text-primary mr-2">•</span>
-              <span className="text-sm text-muted-foreground">{feature}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
       <CardFooter>
         <Button asChild variant="ghost" className="group">
           <Link to="/contact">

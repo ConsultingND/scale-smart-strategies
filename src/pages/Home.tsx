@@ -1,4 +1,4 @@
-import { Code2, Cpu, Wrench } from "lucide-react";
+import { Code2, Cpu, Wrench, Users } from "lucide-react";
 import Hero from "@/components/Hero";
 import ServiceCard from "@/components/ServiceCard";
 
@@ -40,6 +40,18 @@ const Home = () => {
       ],
       iconBackground: "bg-gradient-to-br from-orange-500 to-red-600",
     },
+    {
+      icon: Users,
+      title: "Developer Vetting & Consulting",
+      description: "Guidance for non-technical founders on finding, vetting, and working effectively with developers.",
+      features: [
+        "How to communicate with your development team",
+        "Tools to convey project details and requirements",
+        "Tracking progress and measuring success",
+        "Building a weekly cadence and workflow",
+      ],
+      iconBackground: "bg-gradient-to-br from-purple-500 to-pink-600",
+    },
   ];
 
   return (
@@ -58,7 +70,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {services.map((service, index) => (
               <div key={index} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
                 <ServiceCard {...service} />
