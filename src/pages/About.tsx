@@ -70,7 +70,7 @@ const About = () => {
       </section>
 
       {/* Founder Section */}
-      <section className="py-16">
+    {/*   <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -94,11 +94,11 @@ const About = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   "I believe that the right technology, implemented thoughtfully, can be a game-changer for small businesses. My goal is to make that transformation as smooth and successful as possible."
                 </p>
-              </div>
+              </div> 
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Core Values */}
       <section className="py-24 bg-primary text-primary-foreground">
