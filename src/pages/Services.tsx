@@ -72,10 +72,10 @@ const Services = () => {
       subtitle: "Expert guidance for non-technical founders",
       description: "Building a successful product requires more than just hiring developers—it requires knowing how to work with them effectively. We help non-technical founders navigate the technical landscape with confidence.",
       benefits: [
-        "How to communicate effectively with your development team",
-        "Tools and frameworks to convey project details, requirements, technical proposals, and estimates",
-        "Tracking progress and measuring development success",
-        "Building a weekly cadence and productive workflow",
+        "How to communicate effectively with your dev team",
+        "Tools and frameworks to convey project details, technical proposals, and estimates",
+        "Tracking progress and measuring success",
+        "Building a weekly cadence and productive workflows",
         "Vetting and interviewing technical candidates",
       ],
     },
@@ -134,12 +134,12 @@ const Services = () => {
                   </Button>
                 </div>
                 
-                <div className={`bg-muted rounded-2xl h-80 flex items-center justify-center p-6 ${index % 2 === 1 ? "md:order-1" : ""}`}>
+                <div className={`bg-muted rounded-2xl min-h-80 flex items-center justify-center p-6 ${index % 2 === 1 ? "md:order-1" : ""}`}>
                   <div className="space-y-3 w-full">
                     {service.benefits.map((benefit, i) => (
                       <div key={i} className="flex items-start space-x-3">
                         <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{benefit}</span>
+                        <span className="text-sm md:text-base text-muted-foreground">{benefit}</span>
                       </div>
                     ))}
                   </div>
