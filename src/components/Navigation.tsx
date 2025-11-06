@@ -42,7 +42,7 @@ const Navigation = () => {
               </Link>
             ))}
             <Button asChild variant="default" size="sm">
-              <Link to="/contact">Work With Us</Link>
+              <Link to="/contact">Let's Get Started</Link>
             </Button>
           </div>
 
