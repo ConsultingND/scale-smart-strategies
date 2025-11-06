@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { sendWelcomeEmail } from "@/utils/newsletter";
 
 const NewsletterSection = () => {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -14,16 +17,50 @@ const NewsletterSection = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call - replace with actual newsletter service integration
-    setTimeout(() => {
+    try {
+      // Save subscriber to Supabase
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert({
+          email: email.toLowerCase().trim(),
+          first_name: firstName.trim() || null,
+          last_name: lastName.trim() || null,
+        });
+
+      if (error) {
+        // Check if it's a duplicate email error
+        if (error.code === '23505') {
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        // Send welcome email in the background (don't wait for it)
+        sendWelcomeEmail(email.toLowerCase().trim(), firstName.trim() || undefined, lastName.trim() || undefined)
+          .catch((err) => console.error('Welcome email failed (non-critical):', err));
+
+        toast({
+          title: "Success!",
+          description: "You've been subscribed to our newsletter. Check your email for a welcome message!",
+        });
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
       toast({
-        title: "Success!",
-        description: "You've been subscribed to our newsletter.",
+        title: "Oops!",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
       });
-      setName("");
-      setEmail("");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

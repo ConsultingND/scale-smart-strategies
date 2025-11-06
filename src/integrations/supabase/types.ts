@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      newsletter_subscribers: {
+        Row: {
+          id: string
+          email: string
+          first_name: string | null
+          last_name: string | null
+          subscribed_at: string
+          is_active: boolean
+          unsubscribe_token: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          first_name?: string | null
+          last_name?: string | null
+          subscribed_at?: string
+          is_active?: boolean
+          unsubscribe_token?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          first_name?: string | null
+          last_name?: string | null
+          subscribed_at?: string
+          is_active?: boolean
+          unsubscribe_token?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_send_results: {
+        Row: {
+          id: string
+          newsletter_slug: string
+          recipient_email: string
+          recipient_first_name: string | null
+          recipient_last_name: string | null
+          unsubscribe_token: string | null
+          success: boolean
+          response_text: string | null
+          sent_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          newsletter_slug: string
+          recipient_email: string
+          recipient_first_name?: string | null
+          recipient_last_name?: string | null
+          unsubscribe_token?: string | null
+          success?: boolean
+          response_text?: string | null
+          sent_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          newsletter_slug?: string
+          recipient_email?: string
+          recipient_first_name?: string | null
+          recipient_last_name?: string | null
+          unsubscribe_token?: string | null
+          success?: boolean
+          response_text?: string | null
+          sent_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
