@@ -1,65 +1,10 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
+import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => {
-  const blogPosts = [
-    {
-      id: 1,
-      title: "5 Ways AI Can Transform Your Small Business Today",
-      excerpt: "Discover practical AI applications that can streamline operations and boost productivity without breaking the bank.",
-      category: "AI for Business",
-      date: "2024-01-15",
-      readTime: "5 min read",
-      slug: "ai-transform-small-business",
-    },
-    {
-      id: 2,
-      title: "Building Scalable Web Apps: A Founder's Guide",
-      excerpt: "Learn the key architectural decisions that will help your application grow with your business.",
-      category: "Web Development Tips",
-      date: "2024-01-10",
-      readTime: "8 min read",
-      slug: "building-scalable-web-apps",
-    },
-    {
-      id: 3,
-      title: "Prompt Engineering 101: Getting Better Results from ChatGPT",
-      excerpt: "Master the art of writing effective prompts to maximize the value you get from AI tools.",
-      category: "Prompt Engineering",
-      date: "2024-01-05",
-      readTime: "6 min read",
-      slug: "prompt-engineering-101",
-    },
-    {
-      id: 4,
-      title: "When to Build vs. Buy: A Technical Decision Framework",
-      excerpt: "Navigate the build-or-buy decision with confidence using this practical framework.",
-      category: "Tech Consultant Angle",
-      date: "2023-12-28",
-      readTime: "7 min read",
-      slug: "build-vs-buy-framework",
-    },
-    {
-      id: 5,
-      title: "Why I Started ND Scale Smart: From Corporate to Consulting",
-      excerpt: "The personal journey from enterprise software to helping small businesses scale smart.",
-      category: "Authority / Pivot Story",
-      date: "2023-12-20",
-      readTime: "10 min read",
-      slug: "why-i-started-nd-scalesmart",
-    },
-    {
-      id: 6,
-      title: "3 Quick Wins to Improve Your Website's Performance Today",
-      excerpt: "Simple, actionable steps you can take right now to speed up your website.",
-      category: "Quick Practical Value",
-      date: "2023-12-15",
-      readTime: "4 min read",
-      slug: "quick-wins-website-performance",
-    },
-  ];
 
   const categories = ["All", "AI for Business", "Web Development Tips", "Prompt Engineering", "Scaling Smart", "Tech Consultant Angle"];
 
