@@ -85,9 +85,16 @@ const NewsletterSection = () => {
           <form onSubmit={handleSubmit} className="space-y-4 desktop:space-y-0 desktop:space-x-2">
             <Input
               type="text"
-              placeholder="Name (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="First Name (optional)"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
+            />
+            <Input
+              type="text"
+              placeholder="Last Name (optional)"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
             />
             <Input

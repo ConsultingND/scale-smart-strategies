@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { sendWelcomeEmail } from "@/utils/newsletter";
 
 const NewsletterSignup = () => {
   const [email, setEmail] = useState("");
@@ -12,15 +14,43 @@ const NewsletterSignup = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call - replace with actual newsletter service integration
-    setTimeout(() => {
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert({
+          email: email.toLowerCase().trim(),
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        sendWelcomeEmail(email.toLowerCase().trim())
+          .catch((err) => console.error('Welcome email failed (non-critical):', err));
+
+        toast({
+          title: "Success!",
+          description: "You've been subscribed to our newsletter. Check your email!",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
       toast({
-        title: "Success!",
-        description: "You've been subscribed to our newsletter.",
+        title: "Oops!",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
       });
-      setEmail("");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
