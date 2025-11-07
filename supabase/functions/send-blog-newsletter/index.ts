@@ -26,7 +26,7 @@ serve(async (req: Request) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const SITE_URL = Deno.env.get('SITE_URL') || 'https://ndscalesmart.com';
-    const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'newsletter@ndscalesmart.com';
+    const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'solutions@ndscalesmart.com';
 
     if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set');
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set');
@@ -215,6 +215,21 @@ serve(async (req: Request) => {
         });
       }
 
+      // Get the unsubscribe token from the database
+      const { data: subscriber, error: subError } = await supabase
+        .from('newsletter_subscribers')
+        .select('unsubscribe_token')
+        .eq('email', email)
+        .single();
+
+      if (subError || !subscriber) {
+        console.error('Could not find subscriber token:', subError);
+        return new Response(JSON.stringify({ error: 'Subscriber not found' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       const greeting = firstName ? `Hi ${firstName},` : 'Hi there,';
 
       const htmlContent = `
@@ -263,7 +278,7 @@ serve(async (req: Request) => {
           Have questions? Feel free to reply to this email or <a href="${SITE_URL}/contact" style="color: #0B1E3F; text-decoration: underline;">contact us</a>.
         </p>
         <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-          If you didn't subscribe to this newsletter, you can <a href="${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.
+          If you didn't subscribe to this newsletter, you can <a href="${SITE_URL}/unsubscribe?token=${subscriber.unsubscribe_token}" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.
         </p>
       </div>
     </div>

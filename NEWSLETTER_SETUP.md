@@ -80,7 +80,7 @@ supabase secrets set RESEND_API_KEY=re_123456789...
 supabase secrets set SITE_URL=https://your-site.vercel.app
 
 # Set the from email (must match your verified domain)
-supabase secrets set FROM_EMAIL=newsletter@ndscalesmart.com
+supabase secrets set FROM_EMAIL=solutions@ndscalesmart.com
 ```
 
 ### 3.3 Set Local Environment Variables (for development)

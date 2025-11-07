@@ -8,7 +8,6 @@ import { sendWelcomeEmail } from "@/utils/newsletter";
 
 const NewsletterSection = () => {
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -24,7 +23,6 @@ const NewsletterSection = () => {
         .insert({
           email: email.toLowerCase().trim(),
           first_name: firstName.trim() || null,
-          last_name: lastName.trim() || null,
         });
 
       if (error) {
@@ -40,7 +38,7 @@ const NewsletterSection = () => {
         }
       } else {
         // Send welcome email in the background (don't wait for it)
-        sendWelcomeEmail(email.toLowerCase().trim(), firstName.trim() || undefined, lastName.trim() || undefined)
+        sendWelcomeEmail(email.toLowerCase().trim(), firstName.trim() || undefined)
           .catch((err) => console.error('Welcome email failed (non-critical):', err));
 
         toast({
@@ -48,7 +46,6 @@ const NewsletterSection = () => {
           description: "You've been subscribed to our newsletter. Check your email for a welcome message!",
         });
         setFirstName("");
-        setLastName("");
         setEmail("");
       }
     } catch (error) {
@@ -85,16 +82,9 @@ const NewsletterSection = () => {
           <form onSubmit={handleSubmit} className="space-y-4 desktop:space-y-0 desktop:space-x-2">
             <Input
               type="text"
-              placeholder="First Name (optional)"
+              placeholder="First name (optional)"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
-            />
-            <Input
-              type="text"
-              placeholder="Last Name (optional)"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
               className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 block desktop:inline-block desktop:w-auto"
             />
             <Input
