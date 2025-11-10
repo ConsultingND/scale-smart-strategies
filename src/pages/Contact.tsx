@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { submitContactForm } from "@/utils/contact";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -30,12 +31,14 @@ const Contact = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate form submission - replace with actual email integration
-    setTimeout(() => {
+    try {
+      await submitContactForm(formData);
+
       toast({
         title: "Message Sent!",
-        description: "We'll get back to you within 24 hours.",
+        description: "We'll get back to you within 24 hours. Check your email for confirmation!",
       });
+
       setFormData({
         firstName: "",
         lastName: "",
@@ -50,8 +53,16 @@ const Contact = () => {
         aiQuestion3: "",
         aiQuestion4: "",
       });
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast({
+        title: "Oops!",
+        description: "Something went wrong. Please try again or email us directly at solutions@ndscalesmart.com",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
