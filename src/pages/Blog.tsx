@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -5,8 +6,14 @@ import { Calendar, Clock } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => {
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", "AI for Business", "Web Development Tips", "Prompt Engineering", "Scaling Smart", "Tech Consultant Angle"];
+
+  // Filter posts based on selected category
+  const filteredPosts = selectedCategory === "All"
+    ? blogPosts
+    : blogPosts.filter(post => post.category === selectedCategory);
 
   return (
     <div className="min-h-screen pt-20">
@@ -28,12 +35,13 @@ const Blog = () => {
       {/* Category Filter */}
       <section className="py-8 border-b">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             {categories.map((category) => (
               <Badge
                 key={category}
-                variant={category === "All" ? "default" : "outline"}
-                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                variant={category === selectedCategory ? "default" : "outline"}
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-base px-4 py-2"
+                onClick={() => setSelectedCategory(category)}
               >
                 {category}
               </Badge>
@@ -45,41 +53,47 @@ const Blog = () => {
       {/* Blog Posts Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
-              <Link key={post.id} to={`/blog/${post.slug}`}>
-                <Card className="hover-lift h-full hover:border-primary/50 transition-all duration-300">
-                  <CardHeader>
-                    <Badge className="w-fit mb-2" variant="secondary">
-                      {post.category}
-                    </Badge>
-                    <CardTitle className="text-xl leading-tight hover:text-primary transition-colors">
-                      {post.title}
-                    </CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {post.excerpt}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(post.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric' 
-                        })}
+          {filteredPosts.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-xl text-muted-foreground">No posts found in this category.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredPosts.map((post) => (
+                <Link key={post.id} to={`/blog/${post.slug}`}>
+                  <Card className="hover-lift h-full hover:border-primary/50 transition-all duration-300">
+                    <CardHeader>
+                      <Badge className="w-fit mb-2" variant="secondary">
+                        {post.category}
+                      </Badge>
+                      <CardTitle className="text-xl leading-tight hover:text-primary transition-colors">
+                        {post.title}
+                      </CardTitle>
+                      <CardDescription className="line-clamp-2">
+                        {post.excerpt}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          {new Date(post.date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {post.readTime}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {post.readTime}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
