@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="SvgjsLinearGradient1005" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1"></stop>
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1"></stop>
+    </linearGradient>
+    <linearGradient id="SvgjsLinearGradient1004" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e8f0;stop-opacity:1"></stop>
+      <stop offset="100%" style="stop-color:#cbd5e1;stop-opacity:1"></stop>
+    </linearGradient>
+    <radialGradient id="SvgjsRadialGradient1003" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#22D3EE;stop-opacity:0.3"></stop>
+      <stop offset="100%" style="stop-color:#22D3EE;stop-opacity:0"></stop>
+    </radialGradient>
+  </defs>
+  
+  <!-- Navy blue background with rounded corners -->
+  <rect width="512" height="512" rx="80" fill="url(#navyBg)"></rect>
+  
+  <!-- Subtle AI neural network pattern -->
+  <g opacity="0.15">
+    <!-- Top right neural nodes -->
+    <circle cx="380" cy="120" r="4" fill="#cbd5e1"></circle>
+    <circle cx="420" cy="90" r="4" fill="#cbd5e1"></circle>
+    <circle cx="450" cy="140" r="4" fill="#cbd5e1"></circle>
+    <line x1="380" y1="120" x2="420" y2="90" stroke="#cbd5e1" stroke-width="1.5"></line>
+    <line x1="420" y1="90" x2="450" y2="140" stroke="#cbd5e1" stroke-width="1.5"></line>
+    
+    <!-- Bottom left neural nodes -->
+    <circle cx="80" cy="390" r="4" fill="#cbd5e1"></circle>
+    <circle cx="120" cy="420" r="4" fill="#cbd5e1"></circle>
+    <circle cx="60" cy="440" r="4" fill="#cbd5e1"></circle>
+    <line x1="80" y1="390" x2="120" y2="420" stroke="#cbd5e1" stroke-width="1.5"></line>
+    <line x1="120" y1="420" x2="60" y2="440" stroke="#cbd5e1" stroke-width="1.5"></line>
+    
+    <!-- Connecting diagonal line -->
+    <line x1="140" y1="140" x2="380" y2="380" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5,5"></line>
+  </g>
+  
+  <!-- Digital gradient glow behind text -->
+  <circle cx="256" cy="256" r="200" fill="url(#glowGrad)"></circle>
+  
+  <!-- ND Lettermark in cyan -->
+  <g transform="translate(256, 256)">
+    <!-- N -->
+    <path d="M -140 -100 L -140 100 L -100 100 L -100 -20 L -20 100 L 20 100 L 20 -100 L -20 -100 L -20 20 L -100 -100 Z" fill="#22D3EE"></path>
+    
+    <!-- D -->
+    <path d="M 40 -100 L 40 100 L 100 100 Q 180 100 180 0 Q 180 -100 100 -100 Z 
+             M 80 -60 L 100 -60 Q 140 -60 140 0 Q 140 60 100 60 L 80 60 Z" fill="#22D3EE"></path>
+  </g>
+  
+  <!-- Scale indicator with silver gradient - three ascending dots -->
+  <g transform="translate(360, 380)">
+    <circle cx="0" cy="20" r="10" fill="url(#silverGrad)"></circle>
+    <circle cx="30" cy="10" r="10" fill="url(#silverGrad)"></circle>
+    <circle cx="60" cy="0" r="10" fill="url(#silverGrad)"></circle>
+    <!-- Light nodes connecting the dots -->
+    <line x1="8" y1="18" x2="24" y2="12" stroke="#22D3EE" stroke-width="2" opacity="0.5"></line>
+    <line x1="38" y1="8" x2="54" y2="2" stroke="#22D3EE" stroke-width="2" opacity="0.5"></line>
+  </g>
+  
+  <!-- Subtle corner accent lines (digital aesthetic) -->
+  <g opacity="0.3">
+    <line x1="80" y1="80" x2="140" y2="80" stroke="#cbd5e1" stroke-width="2"></line>
+    <line x1="80" y1="80" x2="80" y2="140" stroke="#cbd5e1" stroke-width="2"></line>
+    <line x1="432" y1="432" x2="372" y2="432" stroke="#cbd5e1" stroke-width="2"></line>
+    <line x1="432" y1="432" x2="432" y2="372" stroke="#cbd5e1" stroke-width="2"></line>
+  </g>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
