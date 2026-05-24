@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Mail } from 'lucide-react';
 import type { ContactInfoValue } from '../types';
 
 type Props = {
@@ -14,7 +15,18 @@ export default function ContactInfo({ id, value, onChange }: Props) {
     onChange({ ...value, [key]: v });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <div className="rounded-lg border bg-primary/5 p-4 flex gap-3 items-start">
+        <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+        <div className="text-sm leading-relaxed">
+          <p className="font-semibold text-foreground mb-1">Get your scorecard by email</p>
+          <p className="text-muted-foreground">
+            Subscribe to receive your personalized scorecard and recommendations. We&apos;ll send it to your inbox and
+            walk through it on a call if you want.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor={`${id}-first`}>First Name *</Label>
@@ -50,38 +62,13 @@ export default function ContactInfo({ id, value, onChange }: Props) {
           type="email"
           required
           autoComplete="email"
+          placeholder="you@example.com"
           value={value.email}
           onChange={(e) => update('email', e.target.value)}
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor={`${id}-company`}>Company *</Label>
-        <Input
-          id={`${id}-company`}
-          name="company"
-          type="text"
-          required
-          autoComplete="organization"
-          value={value.company}
-          onChange={(e) => update('company', e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor={`${id}-website`}>Website (optional)</Label>
-        <Input
-          id={`${id}-website`}
-          name="website"
-          type="url"
-          autoComplete="url"
-          placeholder="https://"
-          value={value.website}
-          onChange={(e) => update('website', e.target.value)}
-        />
-      </div>
-
-      {/* Honeypot — hidden from real users */}
+      {/* Honeypot — hidden from real users, visible to bots */}
       <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, overflow: 'hidden' }}>
         <label htmlFor={`${id}-website-confirm`}>Leave this field empty</label>
         <input
@@ -103,8 +90,7 @@ export default function ContactInfo({ id, value, onChange }: Props) {
           className="mt-0.5"
         />
         <Label htmlFor={`${id}-consent`} className="font-normal leading-relaxed">
-          I agree to receive my results and follow-up communications from ND Scale Smart. We&apos;ll never share your
-          info.
+          I agree to receive my results and follow-up emails from ND Scale Smart. Unsubscribe anytime.
         </Label>
       </div>
     </div>

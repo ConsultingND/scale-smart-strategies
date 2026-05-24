@@ -1,8 +1,15 @@
-import type { Answers, QuizConfig, Results, ScoreDimension } from '@/components/quiz/types';
-import { clamp01, getString, textSpecificity } from '@/components/quiz/scoring';
+import type { Answers, QuizConfig, Recommendation, Results, ScoreDimension } from '@/components/quiz/types';
+import { clamp01, getString, getStringArray, textSpecificity } from '@/components/quiz/scoring';
 import { MECHANISM_RECOMMENDATIONS, NO_APP_RECOMMENDATION } from './recommendations';
 
 const APP_NEEDED_ID = 'app_needed';
+
+function describeScore(score: number): string {
+  if (score >= 0.85) return 'very strong';
+  if (score >= 0.6) return 'solid';
+  if (score >= 0.35) return 'mid';
+  return 'thin';
+}
 
 function scoreBeginner(answers: Answers): Results {
   const problemClarity = textSpecificity(answers['problem_statement']);
@@ -38,21 +45,51 @@ function scoreBeginner(answers: Answers): Results {
         ? 'You\'re close — a couple of sharper answers and we can scope an MVP.'
         : 'Let\'s validate the idea before any code gets written.';
 
-  const mechanism = getString(answers, 'mechanism');
-  const recommendation = appNeeded === 'no'
-    ? NO_APP_RECOMMENDATION
-    : (MECHANISM_RECOMMENDATIONS[mechanism] ?? {
-        tag: 'Custom Web App',
-        headline: 'You\'re building something custom.',
-        body: 'Your mechanism doesn\'t map to a single template. That\'s fine — it just means scoping starts with a 30-minute conversation, not a pattern match.',
-      });
+  // Mechanism is now multi-select (up to 3). The first selection drives the
+  // primary recommendation; the rest become alternates.
+  const mechanisms = getStringArray(answers, 'mechanism');
+  const primaryMechanism = mechanisms[0] ?? '';
 
-  return { summary, recommendation, dimensions };
+  const fallbackRec: Recommendation = {
+    tag: 'Custom Web App',
+    headline: 'You\'re building something custom.',
+    body: 'Your mechanism doesn\'t map to a single template. That\'s fine — it just means scoping starts with a 30-minute conversation, not a pattern match.',
+  };
+
+  const recommendation =
+    appNeeded === 'no'
+      ? NO_APP_RECOMMENDATION
+      : MECHANISM_RECOMMENDATIONS[primaryMechanism] ?? fallbackRec;
+
+  const alternates =
+    appNeeded === 'no'
+      ? undefined
+      : mechanisms
+          .slice(1)
+          .map((m) => MECHANISM_RECOMMENDATIONS[m])
+          .filter((r): r is Recommendation => Boolean(r));
+
+  const adminNotes: string[] = [
+    `Total score: ${Math.round(total * 100)}/100 (${describeScore(total)}).`,
+    `Problem clarity: ${describeScore(problemClarity)} — driven by ${(getString(answers, 'problem_statement') || '(empty)').trim().length} chars in problem_statement.`,
+    `Customer specificity: ${describeScore(customerSpecificity)} — driven by ${(getString(answers, 'ideal_customer') || '(empty)').trim().length} chars in ideal_customer.`,
+    `Business value: ${describeScore(businessValue)} — driven by ${(getString(answers, 'transformation') || '(empty)').trim().length} chars in transformation.`,
+    `App justification: app_needed="${appNeeded || 'n/a'}", app_advantage length=${(getString(answers, 'app_advantage') || '').trim().length}.`,
+    `Market signal: willingness="${willingnessToPay || 'n/a'}", revenue_model="${revenueModel || 'n/a'}".`,
+    mechanisms.length
+      ? `Selected mechanisms: ${mechanisms.join(', ')}. Primary recommendation derived from "${primaryMechanism}".`
+      : 'No mechanism selected — falling back to "Custom Web App".',
+    appNeeded === 'no'
+      ? 'User flagged that no software is needed → routed to Consulting-Fit (no app) recommendation.'
+      : '',
+  ].filter(Boolean);
+
+  return { summary, recommendation, dimensions, alternates: alternates?.length ? alternates : undefined, adminNotes };
 }
 
 const beginnerConfig: QuizConfig = {
   key: 'beginner',
-  storageVersion: 1,
+  storageVersion: 2,
   title: 'Business → App Discovery',
   description: 'A 10-minute quiz that turns a fuzzy business idea into a clear app plan.',
   score: scoreBeginner,
@@ -150,13 +187,15 @@ const beginnerConfig: QuizConfig = {
     {
       id: 'mechanism',
       title: 'How you help',
-      subtitle: 'Pick the verb that best describes what your product does.',
+      subtitle: 'Pick up to three verbs that best describe what your product does. Your first pick drives the main recommendation.',
       questions: [
         {
           id: 'mechanism',
-          kind: 'single-card',
+          kind: 'multi-card',
           label: 'My product mostly…',
           required: true,
+          maxSelections: 3,
+          helpText: 'Choose 1–3. Order matters: the first one you pick is treated as your primary mechanism.',
           options: [
             { value: 'teach', label: 'Teaches', description: 'Delivers structured learning or skill-building.' },
             { value: 'track', label: 'Tracks', description: 'Surfaces progress, metrics, or status over time.' },
@@ -270,10 +309,17 @@ const beginnerConfig: QuizConfig = {
             { value: 'free-then', label: 'Free now, paid later', description: 'You\'re building an audience first.' },
           ],
         },
+      ],
+    },
+    {
+      id: 'subscribe',
+      title: 'Get your scorecard',
+      subtitle: 'Where should we send your personalized results?',
+      questions: [
         {
           id: 'contact',
           kind: 'contact-info',
-          label: 'Send me my results',
+          label: 'Subscribe to get your scorecard',
           required: true,
         },
       ],

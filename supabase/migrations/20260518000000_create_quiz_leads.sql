@@ -1,12 +1,11 @@
--- Quiz leads table — captures submissions from /quiz (beginner) and /expert-quiz.
+-- Quiz leads table — captures subscribe-to-see-results submissions from
+-- /quiz (beginner) and /expert-quiz. Slim contact: first/last/email only.
 CREATE TABLE IF NOT EXISTS public.quiz_leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   quiz TEXT NOT NULL CHECK (quiz IN ('beginner', 'expert')),
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   email TEXT NOT NULL,
-  company TEXT NOT NULL,
-  website TEXT,
   answers JSONB NOT NULL,
   results JSONB NOT NULL,
   utm JSONB,

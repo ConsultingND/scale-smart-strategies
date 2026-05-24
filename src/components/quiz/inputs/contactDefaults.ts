@@ -4,8 +4,6 @@ export const emptyContact: ContactInfoValue = {
   firstName: '',
   lastName: '',
   email: '',
-  company: '',
-  website: '',
   consent: false,
   honeypot: '',
 };

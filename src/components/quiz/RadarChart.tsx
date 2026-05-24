@@ -6,23 +6,53 @@ type Props = {
   size?: number;
 };
 
+const LABEL_LINE_HEIGHT = 14;
+
+function wrapLabel(label: string, maxCharsPerLine = 14): string[] {
+  const words = label.split(/\s+/);
+  if (words.length <= 1) return [label];
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (!current) {
+      current = word;
+      continue;
+    }
+    if ((current + ' ' + word).length > maxCharsPerLine) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = `${current} ${word}`;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
 /**
  * Pure-SVG radar chart. Each dimension's score (0..1) maps to a radial offset
- * from the center. Includes accessible <title>, <desc>, and a screen-reader
- * table summarizing the values.
+ * from the chart center. The viewBox is intentionally larger than the chart
+ * footprint to leave room for axis labels (which can be multi-word).
+ *
+ * Includes accessible <title>, <desc>, and an sr-only summary table.
  */
 export default function RadarChart({ dimensions, title = 'Score', size = 320 }: Props) {
   if (dimensions.length < 3) {
     return null;
   }
-  const center = size / 2;
-  const radius = (size / 2) * 0.82;
+  const horizontalPadding = 120;
+  const verticalPadding = 40;
+  const width = size + horizontalPadding * 2;
+  const height = size + verticalPadding * 2;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = size / 2;
 
   const angleFor = (i: number) => (Math.PI * 2 * i) / dimensions.length - Math.PI / 2;
 
   const axisPoint = (i: number, scale = 1) => {
     const a = angleFor(i);
-    return [center + Math.cos(a) * radius * scale, center + Math.sin(a) * radius * scale];
+    return [cx + Math.cos(a) * radius * scale, cy + Math.sin(a) * radius * scale];
   };
 
   const polygon = dimensions
@@ -38,15 +68,12 @@ export default function RadarChart({ dimensions, title = 'Score', size = 320 }: 
     <figure className="mx-auto" aria-label={title}>
       <svg
         role="img"
-        viewBox={`0 0 ${size} ${size}`}
-        width={size}
-        height={size}
-        className="mx-auto"
+        viewBox={`0 0 ${width} ${height}`}
+        className="mx-auto w-full max-w-[520px] h-auto"
+        preserveAspectRatio="xMidYMid meet"
       >
         <title>{title}</title>
-        <desc>
-          Radar chart showing scores for {dimensions.map((d) => d.label).join(', ')}.
-        </desc>
+        <desc>Radar chart showing scores for {dimensions.map((d) => d.label).join(', ')}.</desc>
 
         {/* Concentric rings */}
         {rings.map((r) => (
@@ -67,7 +94,7 @@ export default function RadarChart({ dimensions, title = 'Score', size = 320 }: 
         {/* Axes */}
         {dimensions.map((_, i) => {
           const [x, y] = axisPoint(i);
-          return <line key={i} x1={center} y1={center} x2={x} y2={y} stroke="#DADCDD" strokeWidth={1} />;
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#DADCDD" strokeWidth={1} />;
         })}
 
         {/* Score polygon */}
@@ -79,22 +106,28 @@ export default function RadarChart({ dimensions, title = 'Score', size = 320 }: 
           return <circle key={d.id} cx={x} cy={y} r={4} fill="#0B1E3F" />;
         })}
 
-        {/* Axis labels */}
+        {/* Axis labels (wrapped to two lines when needed) */}
         {dimensions.map((d, i) => {
-          const [x, y] = axisPoint(i, 1.12);
-          const anchor = x < center - 4 ? 'end' : x > center + 4 ? 'start' : 'middle';
+          const [x, y] = axisPoint(i, 1.16);
+          const anchor = x < cx - 4 ? 'end' : x > cx + 4 ? 'start' : 'middle';
+          const lines = wrapLabel(d.label);
+          const yStart = y - ((lines.length - 1) / 2) * LABEL_LINE_HEIGHT;
           return (
             <text
               key={`label-${d.id}`}
               x={x}
-              y={y}
+              y={yStart}
               textAnchor={anchor}
               dominantBaseline="middle"
-              fontSize={12}
+              fontSize={13}
               fill="#1A3A5F"
               fontWeight={600}
             >
-              {d.label}
+              {lines.map((line, li) => (
+                <tspan key={li} x={x} dy={li === 0 ? 0 : LABEL_LINE_HEIGHT}>
+                  {line}
+                </tspan>
+              ))}
             </text>
           );
         })}

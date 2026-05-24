@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-const submitQuizLead = vi.fn().mockResolvedValue(undefined);
+const submitQuizLead = vi.fn().mockResolvedValue({ saved: true, emailed: true });
 vi.mock('@/utils/quiz', () => ({
   submitQuizLead: (payload: unknown) => submitQuizLead(payload),
 }));
@@ -112,11 +112,10 @@ describe('Quiz controller', () => {
     await user.click(screen.getByRole('radio', { name: /alpha/i }));
     await user.click(screen.getByRole('button', { name: /next/i }));
 
-    // Section 3 — contact info
+    // Section 3 — subscribe-to-see-results gate (first/last/email + consent)
     await user.type(screen.getByLabelText(/first name/i), 'Ada');
     await user.type(screen.getByLabelText(/last name/i), 'Lovelace');
     await user.type(screen.getByLabelText(/^email/i), 'ada@example.com');
-    await user.type(screen.getByLabelText(/company/i), 'Analytical Engine Co');
     await user.click(screen.getByRole('checkbox', { name: /agree/i }));
 
     await user.click(screen.getByRole('button', { name: /see my results/i }));

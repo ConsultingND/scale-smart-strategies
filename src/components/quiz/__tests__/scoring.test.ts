@@ -59,29 +59,38 @@ describe('beginner quiz score()', () => {
   it('returns NO_APP recommendation when app_needed === "no"', () => {
     const results = beginner.score({
       app_needed: 'no',
-      mechanism: 'teach',
+      mechanism: ['teach'],
       problem_statement: 'a'.repeat(150),
     });
     expect(results.recommendation).toBe(NO_APP_RECOMMENDATION);
   });
 
-  it('maps mechanism → recommendation', () => {
-    const r = beginner.score({ app_needed: 'yes', mechanism: 'track' });
+  it('maps the first selected mechanism to the primary recommendation', () => {
+    const r = beginner.score({ app_needed: 'yes', mechanism: ['track', 'organize'] });
     expect(r.recommendation).toBe(MECHANISM_RECOMMENDATIONS.track);
   });
 
-  it('falls back to a custom recommendation when mechanism is unknown', () => {
-    const r = beginner.score({ app_needed: 'yes', mechanism: 'nonsense' });
+  it('treats additional mechanisms as alternates', () => {
+    const r = beginner.score({ app_needed: 'yes', mechanism: ['teach', 'connect', 'remind'] });
+    expect(r.recommendation).toBe(MECHANISM_RECOMMENDATIONS.teach);
+    const altTags = (r.alternates ?? []).map((a) => a.tag);
+    expect(altTags).toContain(MECHANISM_RECOMMENDATIONS.connect.tag);
+    expect(altTags).toContain(MECHANISM_RECOMMENDATIONS.remind.tag);
+  });
+
+  it('falls back to a custom recommendation when no mechanism is selected', () => {
+    const r = beginner.score({ app_needed: 'yes', mechanism: [] });
     expect(r.recommendation.tag).toBe('Custom Web App');
   });
 
-  it('produces 5 dimensions in [0,1]', () => {
+  it('produces 5 dimensions in [0,1] and admin notes', () => {
     const r = beginner.score({});
     expect(r.dimensions).toHaveLength(5);
     for (const d of r.dimensions) {
       expect(d.score).toBeGreaterThanOrEqual(0);
       expect(d.score).toBeLessThanOrEqual(1);
     }
+    expect(r.adminNotes?.length).toBeGreaterThan(0);
   });
 });
 
@@ -113,9 +122,10 @@ describe('expert quiz score()', () => {
     expect(all.some((rec) => rec.tag === 'Vibe-Code → Production')).toBe(true);
   });
 
-  it('produces 5 dimensions in [0,1] and an urgency-aware summary', () => {
+  it('produces 5 dimensions in [0,1] and an urgency-aware summary + admin notes', () => {
     const r = expert.score({ urgency: 'this-week' });
     expect(r.dimensions).toHaveLength(5);
     expect(r.summary.toLowerCase()).toContain('this week');
+    expect(r.adminNotes?.length).toBeGreaterThan(0);
   });
 });

@@ -73,6 +73,7 @@ export default function QuestionRenderer({ question, answers, onChange, autoFocu
           options={question.options}
           helpText={question.helpText}
           required={question.required}
+          maxSelections={question.maxSelections}
         />
       );
 

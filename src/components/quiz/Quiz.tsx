@@ -35,7 +35,6 @@ function isQuestionAnswered(q: Question, value: AnswerValue | undefined): boolea
         c.firstName.trim() &&
         c.lastName.trim() &&
         c.email.trim() &&
-        c.company.trim() &&
         c.consent &&
         !c.honeypot,
     );
@@ -153,26 +152,30 @@ export default function Quiz({ config }: Props) {
     if (!results) return;
     if (!contactValue.consent || contactValue.honeypot) {
       setSubmitState('error');
-      setSubmitError('Please accept the consent checkbox to send your results.');
+      setSubmitError('Please accept the consent checkbox to receive your results.');
       return;
     }
     setSubmitState('submitting');
     setSubmitError(undefined);
-    try {
-      await submitQuizLead({
-        quiz: config.key,
-        answers,
-        results,
-        contact: contactValue,
-        utm,
-        submittedAt: new Date().toISOString(),
-      });
+    const outcome = await submitQuizLead({
+      quiz: config.key,
+      answers,
+      results,
+      contact: contactValue,
+      utm,
+      submittedAt: new Date().toISOString(),
+    });
+    if (outcome.saved || outcome.emailed) {
       setSubmitState('success');
       trackEvent('quiz_email_captured', { quiz: config.key });
       clearAnswers(config.key, config.storageVersion);
-    } catch (err) {
+    } else {
+      // Best-effort: we still show the results panel, but flag that we couldn't
+      // reach the backend so the user knows to copy their answers if they care.
       setSubmitState('error');
-      setSubmitError(err instanceof Error ? err.message : 'Submission failed');
+      setSubmitError(
+        "We couldn't deliver your results to your inbox just now. Your scorecard is below — feel free to screenshot it, or email us directly.",
+      );
     }
   }, [answers, config.key, config.storageVersion, contactValue, results, utm]);
 

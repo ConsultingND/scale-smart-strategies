@@ -11,8 +11,6 @@ type ContactInfoValue = {
   firstName: string;
   lastName: string;
   email: string;
-  company: string;
-  website: string;
   consent: boolean;
   honeypot: string;
 };
@@ -24,6 +22,8 @@ type Results = {
   recommendation: Recommendation;
   dimensions: ScoreDimension[];
   alternates?: Recommendation[];
+  /** Admin-only — never rendered to the customer. */
+  adminNotes?: string[];
 };
 
 type QuizLeadPayload = {
@@ -99,7 +99,7 @@ serve(async (req: Request) => {
     const payload = (await req.json()) as QuizLeadPayload;
     const { quiz, contact, answers, results } = payload;
 
-    if (!quiz || !contact?.firstName || !contact?.lastName || !contact?.email || !contact?.company || !results) {
+    if (!quiz || !contact?.firstName || !contact?.lastName || !contact?.email || !results) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -162,9 +162,7 @@ serve(async (req: Request) => {
     <h2 style="color: #0B1E3F; font-size: 18px; margin-top: 30px;">Contact</h2>
     <div style="background: #f9fafb; padding: 20px; border-radius: 6px;">
       <p style="margin: 0 0 8px 0;"><strong>Name:</strong> ${escape(contact.firstName)} ${escape(contact.lastName)}</p>
-      <p style="margin: 0 0 8px 0;"><strong>Email:</strong> <a href="mailto:${escape(contact.email)}">${escape(contact.email)}</a></p>
-      <p style="margin: 0 0 8px 0;"><strong>Company:</strong> ${escape(contact.company)}</p>
-      ${contact.website ? `<p style="margin: 0 0 8px 0;"><strong>Website:</strong> <a href="${escape(contact.website)}">${escape(contact.website)}</a></p>` : ''}
+      <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${escape(contact.email)}">${escape(contact.email)}</a></p>
     </div>
 
     <h2 style="color: #0B1E3F; font-size: 18px; margin-top: 30px;">Recommendation</h2>
@@ -176,6 +174,13 @@ serve(async (req: Request) => {
 
     <h2 style="color: #0B1E3F; font-size: 18px; margin-top: 30px;">Scorecard</h2>
     ${dimensionsBlock(results.dimensions)}
+
+    ${results.adminNotes && results.adminNotes.length
+      ? `<h2 style="color: #0B1E3F; font-size: 18px; margin-top: 30px;">Reasoning (admin only)</h2>
+         <ul style="background: #fef3c7; padding: 16px 16px 16px 32px; border-left: 4px solid #f59e0b; border-radius: 4px; color: #92400e; font-size: 13px; line-height: 1.6;">
+           ${results.adminNotes.map((n) => `<li style="margin-bottom: 4px;">${escape(n)}</li>`).join('')}
+         </ul>`
+      : ''}
 
     <h2 style="color: #0B1E3F; font-size: 18px; margin-top: 30px;">Raw answers</h2>
     ${answersBlock(answers)}

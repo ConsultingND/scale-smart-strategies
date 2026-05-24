@@ -1,5 +1,5 @@
 import type { Answers, QuizConfig, Results, ScoreDimension } from '@/components/quiz/types';
-import { clamp01, getString, getStringArray, textSpecificity } from '@/components/quiz/scoring';
+import { clamp01, getNumber, getString, getStringArray, textSpecificity } from '@/components/quiz/scoring';
 import { SERVICE_RECOMMENDATIONS, type ServiceKey } from './recommendations';
 
 const NO_CODE_FRONTENDS = ['webflow', 'no-code'];
@@ -108,17 +108,30 @@ function scoreExpert(answers: Answers): Results {
           ? 'You\'re scoping for next quarter.'
           : 'You\'re exploring — no rush.';
 
+  const pct = (n: number) => Math.round(n * 100);
+  const adminNotes: string[] = [
+    `Top service recommendation: ${SERVICE_RECOMMENDATIONS[top].tag} (ranked first of ${ranked.length}).`,
+    `Frontend health ${pct(dims.frontend)} — stack_frontend="${getString(answers, 'stack_frontend') || 'n/a'}".`,
+    `Backend health ${pct(dims.backend)} — stack_backend="${getString(answers, 'stack_backend') || 'n/a'}", ceiling_text length=${(getString(answers, 'ceiling_text') || '').trim().length} chars.`,
+    `AI readiness ${pct(dims.ai)} — tools=${JSON.stringify(getStringArray(answers, 'ai_tools'))}, vibe_coding="${getString(answers, 'vibe_coding') || 'n/a'}".`,
+    `Team capacity ${pct(dims.team)} — depth="${getString(answers, 'team_depth') || 'n/a'}", size="${getString(answers, 'team_size') || 'n/a'}".`,
+    `Architecture maturity ${pct(dims.architecture)} — hosting="${getString(answers, 'stack_hosting') || 'n/a'}".`,
+    `User self-selected service_fit="${getString(answers, 'service_fit') || 'n/a'}" (this gets a +0.35 bonus in the ranker).`,
+    `Urgency="${urgency || 'n/a'}", budget=$${getNumber(answers, 'budget', 0)}, decision_maker="${getString(answers, 'decision_maker') || 'n/a'}".`,
+  ];
+
   return {
     summary,
     recommendation: SERVICE_RECOMMENDATIONS[top],
     dimensions,
     alternates,
+    adminNotes,
   };
 }
 
 const expertConfig: QuizConfig = {
   key: 'expert',
-  storageVersion: 1,
+  storageVersion: 2,
   title: 'Technical Audit & Consulting Fit',
   description: 'Diagnose where your tech is holding you back and what kind of help fits.',
   score: scoreExpert,
@@ -383,10 +396,17 @@ const expertConfig: QuizConfig = {
             { value: 'committee', label: 'Committee' },
           ],
         },
+      ],
+    },
+    {
+      id: 'subscribe',
+      title: 'Get your gap report',
+      subtitle: 'Where should we send your personalized diagnosis?',
+      questions: [
         {
           id: 'contact',
           kind: 'contact-info',
-          label: 'Send me my gap report',
+          label: 'Subscribe to get your gap report',
           required: true,
         },
       ],

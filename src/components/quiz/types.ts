@@ -4,8 +4,6 @@ export type ContactInfoValue = {
   firstName: string;
   lastName: string;
   email: string;
-  company: string;
-  website: string;
   consent: boolean;
   honeypot: string;
 };
@@ -30,7 +28,7 @@ export type Question =
   | (BaseQuestion & { kind: 'short-text'; placeholder?: string; maxLength?: number })
   | (BaseQuestion & { kind: 'long-text'; placeholder?: string; rows?: number; maxLength?: number })
   | (BaseQuestion & { kind: 'single-card'; options: Option[] })
-  | (BaseQuestion & { kind: 'multi-card'; options: Option[] })
+  | (BaseQuestion & { kind: 'multi-card'; options: Option[]; maxSelections?: number })
   | (BaseQuestion & {
       kind: 'slider';
       min: number;
@@ -78,6 +76,12 @@ export type Results = {
   dimensions: ScoreDimension[];
   /** Optional secondary recommendations (e.g. expert quiz ranks multiple services) */
   alternates?: Recommendation[];
+  /**
+   * Reasoning intended for the admin email only — never rendered to the customer.
+   * Each entry is one short sentence explaining how a dimension or recommendation
+   * was derived. Helpful for triaging incoming leads.
+   */
+  adminNotes?: string[];
 };
 
 export type ScoreFn = (answers: Answers) => Results;
