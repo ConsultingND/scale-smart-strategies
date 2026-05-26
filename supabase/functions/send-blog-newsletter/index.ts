@@ -61,16 +61,16 @@ serve(async (req: Request) => {
         });
       }
 
-      const batches: any[][] = [];
+      const batches: unknown[][] = [];
       for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
         batches.push(subscribers.slice(i, i + BATCH_SIZE));
       }
 
-      const results: any[] = [];
+      const results: unknown[] = [];
 
       for (let b = 0; b < batches.length; b++) {
         const batch = batches[b];
-        const promises = batch.map(async (subscriber: any) => {
+        const promises = batch.map(async (subscriber: { unsubscribe_token: string; first_name?: string; email: string }) => {
           const unsubscribeUrl = `${SITE_URL}/unsubscribe?token=${subscriber.unsubscribe_token}`;
           const blogUrl = `${SITE_URL}/blog/${blogPost.slug}`;
           const greeting = subscriber.first_name ? `Hi ${subscriber.first_name},` : 'Hi there,';

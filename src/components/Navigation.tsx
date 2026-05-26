@@ -11,6 +11,7 @@ const Navigation = () => {
   const links = [
     { name: "Home", path: "/" },
     { name: "Services", path: "/services" },
+    { name: "Clarity Engine", path: "/quiz" },
     { name: "About", path: "/about" },
     { name: "Blog", path: "/blog" },
   ];
