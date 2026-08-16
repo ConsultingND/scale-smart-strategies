@@ -40,7 +40,6 @@ export async function submitContactForm(formData: ContactFormData) {
   }
 
   // 2. Send emails via Edge Function
-  const { data: { url } } = await supabase.auth.getSession();
   const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`;
 
   const response = await fetch(functionUrl, {
