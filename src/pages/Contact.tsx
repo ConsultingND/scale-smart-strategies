@@ -4,20 +4,61 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { submitContactForm } from "@/utils/contact";
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
+const emptyForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  company: "",
+  website: "",
+  projectType: "",
+  message: "",
+};
+
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    company: "",
-    website: "",
-    projectType: "",
-  });
+  const [formData, setFormData] = useState(emptyForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.projectType) {
+      toast({
+        title: "Project type required",
+        description: "Please select the type of project you have in mind.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await submitContactForm(formData);
+      toast({
+        title: "Message sent!",
+        description: "Thanks for reaching out — we'll get back to you within 24 hours.",
+      });
+      setFormData(emptyForm);
+    } catch (error) {
+      console.error("Contact form error:", error);
+      toast({
+        title: "Oops!",
+        description: "Something went wrong. Please try again or email solutions@ndscalesmart.com.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -86,7 +127,7 @@ const Contact = () => {
 
             {/* Lead-capture intro + Clarity Engine CTA */}
             <div className="lg:col-span-2">
-              <div className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
@@ -95,6 +136,7 @@ const Contact = () => {
                       value={formData.firstName}
                       onChange={(e) => handleChange("firstName", e.target.value)}
                       placeholder="First name"
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -104,6 +146,7 @@ const Contact = () => {
                       value={formData.lastName}
                       onChange={(e) => handleChange("lastName", e.target.value)}
                       placeholder="Last name"
+                      required
                     />
                   </div>
                 </div>
@@ -116,6 +159,7 @@ const Contact = () => {
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
                     placeholder="john@company.com"
+                    required
                   />
                 </div>
 
@@ -152,10 +196,28 @@ const Contact = () => {
                       <SelectItem value="feature-expansion">Feature Expansion</SelectItem>
                       <SelectItem value="ai-strategy">AI Strategy</SelectItem>
                       <SelectItem value="maintenance">Technical Maintenance</SelectItem>
+                      <SelectItem value="readiness-series">The Founder&apos;s Software Readiness Series</SelectItem>
                       <SelectItem value="consultation">General Consultation</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => handleChange("message", e.target.value)}
+                    placeholder="Tell us about your project, timeline, and what you're hoping to accomplish."
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {!isSubmitting && <ArrowRight className="h-4 w-4" />}
+                </Button>
 
                 {/* Clarity Engine pitch */}
                 <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-primary to-accent text-primary-foreground p-8 mt-4">
@@ -180,7 +242,7 @@ const Contact = () => {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
