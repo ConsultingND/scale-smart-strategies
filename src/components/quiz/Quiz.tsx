@@ -8,7 +8,7 @@ import { trackEvent } from './analytics';
 import { clearAnswers, loadAnswers, saveAnswers } from './persistence';
 import { isAnswered } from './scoring';
 import { readUTM } from './utm';
-import { emptyContact } from './inputs/contactDefaults';
+import { emptyContact, isValidEmail } from './inputs/contactDefaults';
 import { submitQuizLead } from '@/utils/quiz';
 import type {
   Answers,
@@ -34,7 +34,7 @@ function isQuestionAnswered(q: Question, value: AnswerValue | undefined): boolea
       c &&
         c.firstName.trim() &&
         c.lastName.trim() &&
-        c.email.trim() &&
+        isValidEmail(c.email) &&
         c.consent &&
         !c.honeypot,
     );
@@ -66,6 +66,8 @@ export default function Quiz({ config }: Props) {
   const [submitError, setSubmitError] = useState<string | undefined>();
   const [utm, setUtm] = useState<UTM>({});
   const startTrackedRef = useRef(false);
+  // Answers snapshot from the last successful send, so edits after viewing results get re-sent.
+  const sentAnswersRef = useRef<string | null>(null);
   const topRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -120,6 +122,10 @@ export default function Quiz({ config }: Props) {
     if (isLastSection) {
       const computed = config.score(answers);
       setResults(computed);
+      if (submitState !== 'submitting' && JSON.stringify(answers) !== sentAnswersRef.current) {
+        setSubmitState('idle');
+        setSubmitError(undefined);
+      }
       setShowResults(true);
       trackEvent('quiz_completed', { quiz: config.key });
       topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -128,7 +134,7 @@ export default function Quiz({ config }: Props) {
     const nextVisible = visible[currentVisibleIndex + 1];
     setRawSectionIndex(nextVisible);
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [answers, config, currentSection, currentVisibleIndex, isLastSection, visible]);
+  }, [answers, config, currentSection, currentVisibleIndex, isLastSection, submitState, visible]);
 
   const goBack = useCallback(() => {
     if (showResults) {
@@ -166,6 +172,7 @@ export default function Quiz({ config }: Props) {
       submittedAt: new Date().toISOString(),
     });
     if (outcome.saved || outcome.emailed) {
+      sentAnswersRef.current = JSON.stringify(answers);
       setSubmitState('success');
       trackEvent('quiz_email_captured', { quiz: config.key });
       clearAnswers(config.key, config.storageVersion);
@@ -200,6 +207,7 @@ export default function Quiz({ config }: Props) {
     setShowResults(false);
     setSubmitState('idle');
     setSubmitError(undefined);
+    sentAnswersRef.current = null;
     startTrackedRef.current = false;
   }, [config.key, config.storageVersion]);
 
@@ -226,6 +234,7 @@ export default function Quiz({ config }: Props) {
               contact={contactValue}
               submitState={submitState}
               errorMessage={submitError}
+              onRetry={sendLead}
             />
             <div className="mt-8 flex flex-wrap gap-3 justify-between items-center border-t pt-6">
               <button type="button" onClick={goBack} className="text-sm font-medium hover:underline">

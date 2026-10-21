@@ -7,3 +7,8 @@ export const emptyContact: ContactInfoValue = {
   consent: false,
   honeypot: '',
 };
+
+// Intentionally loose: catches typos like "abc" or "a@b" without rejecting valid addresses.
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}

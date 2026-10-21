@@ -39,23 +39,28 @@ export async function submitContactForm(formData: ContactFormData) {
     throw new Error('Failed to save contact form');
   }
 
-  // 2. Send emails via Edge Function
+  // 2. Send emails via Edge Function. The submission is already saved, so an
+  // email failure is logged rather than surfaced; otherwise users resubmit and
+  // create duplicate rows.
   const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`;
 
-  const response = await fetch(functionUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-    },
-    body: JSON.stringify(formData),
-  });
+  try {
+    const response = await fetch(functionUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify(formData),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    console.error('Email error:', error);
-    throw new Error('Failed to send contact emails');
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      console.error('Email error:', response.status, body);
+    }
+  } catch (error) {
+    console.error('Email request failed:', error);
   }
 
-  return await response.json();
+  return { success: true };
 }

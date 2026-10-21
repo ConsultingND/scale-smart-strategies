@@ -1,6 +1,7 @@
 import { Code2, Cpu, Wrench, Users } from "lucide-react";
 import Hero from "@/components/Hero";
 import ServiceCard from "@/components/ServiceCard";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const services = [
@@ -120,18 +121,18 @@ const Home = () => {
             Let's discuss how we can help you build smart and scale confidently.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 px-8"
             >
               Get Started
-            </a>
-            <a
-              href="/services"
+            </Link>
+            <Link
+              to="/services"
               className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-primary-foreground/20 bg-transparent hover:bg-primary-foreground/10 h-11 px-8"
             >
               View Services
-            </a>
+            </Link>
           </div>
         </div>
       </section>

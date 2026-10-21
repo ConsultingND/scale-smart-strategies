@@ -128,4 +128,45 @@ describe('Quiz controller', () => {
     expect(payload.contact.consent).toBe(true);
     expect(payload.results.recommendation.headline).toBe('Test rec');
   });
+
+  it('blocks the results gate until the email is well-formed', async () => {
+    const user = userEvent.setup();
+    render(<Quiz config={testConfig} />);
+
+    await user.type(await screen.findByLabelText(/what is it\?/i), 'the idea');
+    await user.click(screen.getByRole('button', { name: /next/i }));
+    await user.click(screen.getByRole('radio', { name: /alpha/i }));
+    await user.click(screen.getByRole('button', { name: /next/i }));
+
+    await user.type(screen.getByLabelText(/first name/i), 'Ada');
+    await user.type(screen.getByLabelText(/last name/i), 'Lovelace');
+    await user.type(screen.getByLabelText(/^email/i), 'ada');
+    await user.click(screen.getByRole('checkbox', { name: /agree/i }));
+
+    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /see my results/i })).toBeDisabled();
+
+    await user.type(screen.getByLabelText(/^email/i), '@example.com');
+    expect(screen.getByRole('button', { name: /see my results/i })).not.toBeDisabled();
+  });
+
+  it('offers a retry when the lead submission fails', async () => {
+    submitQuizLead.mockResolvedValueOnce({ saved: false, emailed: false });
+    const user = userEvent.setup();
+    render(<Quiz config={testConfig} />);
+
+    await user.type(await screen.findByLabelText(/what is it\?/i), 'the idea');
+    await user.click(screen.getByRole('button', { name: /next/i }));
+    await user.click(screen.getByRole('radio', { name: /alpha/i }));
+    await user.click(screen.getByRole('button', { name: /next/i }));
+    await user.type(screen.getByLabelText(/first name/i), 'Ada');
+    await user.type(screen.getByLabelText(/last name/i), 'Lovelace');
+    await user.type(screen.getByLabelText(/^email/i), 'ada@example.com');
+    await user.click(screen.getByRole('checkbox', { name: /agree/i }));
+    await user.click(screen.getByRole('button', { name: /see my results/i }));
+
+    await user.click(await screen.findByRole('button', { name: /try again/i }));
+    expect(submitQuizLead).toHaveBeenCalledTimes(2);
+    expect(await screen.findByText(/we've sent your results/i)).toBeInTheDocument();
+  });
 });

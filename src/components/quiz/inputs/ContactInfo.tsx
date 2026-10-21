@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Mail } from 'lucide-react';
 import type { ContactInfoValue } from '../types';
+import { isValidEmail } from './contactDefaults';
 
 type Props = {
   id: string;
@@ -13,6 +15,8 @@ type Props = {
 export default function ContactInfo({ id, value, onChange }: Props) {
   const update = <K extends keyof ContactInfoValue>(key: K, v: ContactInfoValue[K]) =>
     onChange({ ...value, [key]: v });
+  const [emailTouched, setEmailTouched] = useState(false);
+  const showEmailError = emailTouched && value.email.trim() !== '' && !isValidEmail(value.email);
 
   return (
     <div className="space-y-5">
@@ -65,7 +69,15 @@ export default function ContactInfo({ id, value, onChange }: Props) {
           placeholder="you@example.com"
           value={value.email}
           onChange={(e) => update('email', e.target.value)}
+          onBlur={() => setEmailTouched(true)}
+          aria-invalid={showEmailError}
+          aria-describedby={showEmailError ? `${id}-email-error` : undefined}
         />
+        {showEmailError ? (
+          <p id={`${id}-email-error`} className="text-sm text-destructive">
+            Please enter a valid email address.
+          </p>
+        ) : null}
       </div>
 
       {/* Honeypot — hidden from real users, visible to bots */}

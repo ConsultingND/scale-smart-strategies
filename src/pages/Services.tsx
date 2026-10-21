@@ -160,7 +160,7 @@ const Services = () => {
             Book a free consultation and we'll help you identify the best path forward for your business.
           </p>
           <Button asChild size="lg" variant="secondary">
-            <Link to="/contact#top">Book a Consultation</Link>
+            <Link to="/contact">Book a Consultation</Link>
           </Button>
         </div>
       </section>
