@@ -108,26 +108,13 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
 
 ### 4.2 Test Sending a Newsletter
 
-You can test sending a newsletter using this code snippet:
-
-```typescript
-import { sendBlogPostNewsletter } from '@/utils/newsletter';
-
-// Call this when you publish a blog post
-const result = await sendBlogPostNewsletter({
-  title: "Test Blog Post",
-  slug: "test-blog-post",
-  excerpt: "This is a test blog post to verify newsletter functionality."
-});
-
-console.log(result); // Check the results
-```
-
-Or test directly via the Supabase Functions:
+Sending is admin-only and requires the `NEWSLETTER_ADMIN_SECRET`
+(set it with `supabase secrets set NEWSLETTER_ADMIN_SECRET=...`):
 
 ```bash
-curl -i --location --request POST 'https://knuadvoywivfferdcwbd.supabase.co/functions/v1/send-blog-newsletter' \
+curl -i --location --request POST 'https://<project-ref>.supabase.co/functions/v1/send-blog-newsletter/send' \
   --header 'Authorization: Bearer YOUR_SUPABASE_ANON_KEY' \
+  --header 'x-admin-secret: YOUR_NEWSLETTER_ADMIN_SECRET' \
   --header 'Content-Type: application/json' \
   --data '{"blogPost":{"title":"Test Post","slug":"test","excerpt":"Test excerpt"}}'
 ```
@@ -136,30 +123,9 @@ curl -i --location --request POST 'https://knuadvoywivfferdcwbd.supabase.co/func
 
 ## Step 5: Integrate with Blog Publishing
 
-When you publish a new blog post, call the `sendBlogPostNewsletter` function:
-
-```typescript
-import { sendBlogPostNewsletter } from '@/utils/newsletter';
-
-// Example: When publishing a blog post
-async function publishBlogPost(post) {
-  // 1. Save the blog post to your database/CMS
-
-  // 2. Send newsletter to subscribers
-  try {
-    const result = await sendBlogPostNewsletter({
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-    });
-
-    console.log(`Newsletter sent to ${result.sent} subscribers`);
-  } catch (error) {
-    console.error('Failed to send newsletter:', error);
-    // Handle error (maybe notify admin)
-  }
-}
-```
+When you publish a new blog post, run the `curl` command above from a trusted
+environment (your machine, CI with the secret stored as a CI secret). Do not
+call it from the website: anything in the client bundle is public.
 
 ---
 

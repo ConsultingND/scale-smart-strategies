@@ -33,147 +33,28 @@ When a visitor subscribes:
 
 ## 📝 **How to Send Blog Post Emails**
 
-### Option A: Manual Trigger (Quick Test)
+Sending is **admin-only**. The `/send` route requires the `NEWSLETTER_ADMIN_SECRET`
+in an `x-admin-secret` header. Never call it from the website: anything in the
+client bundle is public.
 
-You can manually send a newsletter from the browser console:
+One-time setup:
 
-```javascript
-// Open browser console (F12) and paste this:
-import { sendBlogPostNewsletter } from '@/utils/newsletter';
-
-await sendBlogPostNewsletter({
-  title: "Your Blog Post Title",
-  slug: "your-blog-post-slug",
-  excerpt: "A brief description of your blog post that will appear in the email."
-});
+```bash
+supabase secrets set NEWSLETTER_ADMIN_SECRET="$(openssl rand -hex 32)"
 ```
 
-### Option B: Integrate with Blog Publishing Workflow
+Keep that value in your password manager. Then, to send a post:
 
-If you're managing blog posts through a CMS or admin panel, add this code to your blog publishing function:
-
-```typescript
-import { sendBlogPostNewsletter } from '@/utils/newsletter';
-
-async function publishBlogPost(post) {
-  // 1. Save/publish your blog post first
-  const published = await saveBlogPost(post);
-
-  // 2. Send newsletter to all subscribers
-  try {
-    const result = await sendBlogPostNewsletter({
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-    });
-
-    console.log(`Newsletter sent to ${result.sent} subscribers`);
-  } catch (error) {
-    console.error('Newsletter send failed:', error);
-    // Handle error - maybe notify admin
-  }
-}
+```bash
+curl -X POST "https://<project-ref>.supabase.co/functions/v1/send-blog-newsletter/send" \
+  -H "Authorization: Bearer <anon-key>" \
+  -H "x-admin-secret: <NEWSLETTER_ADMIN_SECRET>" \
+  -H "Content-Type: application/json" \
+  -d '{"blogPost":{"title":"Your Blog Post Title","slug":"your-blog-post-slug","excerpt":"A brief description."}}'
 ```
 
-### Option C: Create a Custom Admin Page
-
-You can create a simple admin page to send newsletters:
-
-**File: `src/pages/Admin/SendNewsletter.tsx`**
-
-```typescript
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { sendBlogPostNewsletter } from "@/utils/newsletter";
-
-const SendNewsletter = () => {
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [excerpt, setExcerpt] = useState("");
-  const [sending, setSending] = useState(false);
-  const [result, setResult] = useState(null);
-
-  const handleSend = async (e) => {
-    e.preventDefault();
-    setSending(true);
-
-    try {
-      const res = await sendBlogPostNewsletter({ title, slug, excerpt });
-      setResult(res);
-      alert(`Newsletter sent to ${res.sent} subscribers!`);
-    } catch (error) {
-      alert('Failed to send newsletter: ' + error.message);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Send Newsletter</h1>
-
-      <form onSubmit={handleSend} className="space-y-4">
-        <div>
-          <label className="block mb-2">Blog Post Title</label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            placeholder="Enter blog post title"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2">Blog Post Slug</label>
-          <Input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            required
-            placeholder="blog-post-slug"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-2">Excerpt</label>
-          <Textarea
-            value={excerpt}
-            onChange={(e) => setExcerpt(e.target.value)}
-            required
-            placeholder="Brief description that will appear in the email"
-            rows={4}
-          />
-        </div>
-
-        <Button type="submit" disabled={sending}>
-          {sending ? "Sending..." : "Send Newsletter to All Subscribers"}
-        </Button>
-      </form>
-
-      {result && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded">
-          <p>✅ Newsletter sent successfully!</p>
-          <p>Total: {result.total} subscribers</p>
-          <p>Sent: {result.sent} emails</p>
-          <p>Failed: {result.failed} emails</p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default SendNewsletter;
-```
-
-Then add the route to `src/App.tsx`:
-
-```typescript
-import SendNewsletter from "./pages/Admin/SendNewsletter";
-
-// In your Routes:
-<Route path="/admin/send-newsletter" element={<SendNewsletter />} />
-```
+The response reports `total`, `sent` and `failed`. If `NEWSLETTER_ADMIN_SECRET`
+is not set, the function refuses to send (HTTP 503).
 
 ---
 
@@ -267,16 +148,9 @@ ORDER BY MAX(sent_at) DESC;
 
 ## 📚 **Quick Reference**
 
-### Function to Send Newsletter
-```typescript
-import { sendBlogPostNewsletter } from '@/utils/newsletter';
-
-await sendBlogPostNewsletter({
-  title: "Blog Post Title",
-  slug: "blog-post-slug",
-  excerpt: "Brief description..."
-});
-```
+### Send a Newsletter
+Admin-only, via the `curl` command in **How to Send Blog Post Emails** above
+(requires the `x-admin-secret` header).
 
 ### Function to Send Welcome Email (automatic)
 ```typescript

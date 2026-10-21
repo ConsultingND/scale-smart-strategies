@@ -13,8 +13,43 @@ interface BlogPost {
   content?: string;
 }
 
+type Subscriber = { unsubscribe_token: string; first_name?: string | null; email: string };
+type SendResult = { email: string; success: boolean };
+
 const BATCH_SIZE = 50;
 const BATCH_DELAY_MS = 1000;
+// Welcome emails can only be sent for subscriptions created this recently,
+// so the endpoint can't be used to repeatedly email an existing subscriber.
+const WELCOME_WINDOW_MS = 15 * 60 * 1000;
+
+const escapeHtml = (v: unknown) => String(v ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+
+const readJson = async (req: Request): Promise<Record<string, unknown> | null> => {
+  try {
+    const body = await req.json();
+    return body && typeof body === 'object' ? body : null;
+  } catch {
+    return null;
+  }
+};
+
+const timingSafeEqual = (a: string, b: string) => {
+  const enc = new TextEncoder();
+  const x = enc.encode(a);
+  const y = enc.encode(b);
+  if (x.length !== y.length) return false;
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+};
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -37,19 +72,28 @@ serve(async (req: Request) => {
 
     // Route: POST /send (for blog post newsletters)
     if (req.method === 'POST' && pathname.endsWith('/send')) {
-      const payload = await req.json();
-      const { blogPost }: { blogPost: BlogPost } = payload || {};
+      // Admin-only: requires the NEWSLETTER_ADMIN_SECRET in the x-admin-secret header.
+      // The anon key is public, so a valid JWT alone is not authorization.
+      const ADMIN_SECRET = Deno.env.get('NEWSLETTER_ADMIN_SECRET');
+      if (!ADMIN_SECRET) {
+        console.error('NEWSLETTER_ADMIN_SECRET is not set; refusing to send');
+        return jsonResponse({ error: 'Newsletter sending is not configured' }, 503);
+      }
+      if (!timingSafeEqual(req.headers.get('x-admin-secret') ?? '', ADMIN_SECRET)) {
+        return jsonResponse({ error: 'Unauthorized' }, 401);
+      }
 
-      if (!blogPost || !blogPost.title || !blogPost.slug) {
-        return new Response(JSON.stringify({ error: 'Missing required blog post data' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+      const payload = await readJson(req);
+      if (!payload) return jsonResponse({ error: 'Invalid JSON body' }, 400);
+      const blogPost = payload.blogPost as BlogPost | undefined;
+
+      if (!blogPost || typeof blogPost.title !== 'string' || typeof blogPost.slug !== 'string' || !blogPost.title || !blogPost.slug) {
+        return jsonResponse({ error: 'Missing required blog post data' }, 400);
       }
 
       const { data: subscribers, error: subscribersError } = await supabase
         .from('newsletter_subscribers')
-        .select('email, first_name, last_name, unsubscribe_token')
+        .select('email, first_name, unsubscribe_token')
         .eq('is_active', true);
 
       if (subscribersError) throw subscribersError;
@@ -61,19 +105,19 @@ serve(async (req: Request) => {
         });
       }
 
-      const batches: unknown[][] = [];
+      const batches: Subscriber[][] = [];
       for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
         batches.push(subscribers.slice(i, i + BATCH_SIZE));
       }
 
-      const results: unknown[] = [];
+      const results: SendResult[] = [];
 
       for (let b = 0; b < batches.length; b++) {
         const batch = batches[b];
-        const promises = batch.map(async (subscriber: { unsubscribe_token: string; first_name?: string; email: string }) => {
-          const unsubscribeUrl = `${SITE_URL}/unsubscribe?token=${subscriber.unsubscribe_token}`;
-          const blogUrl = `${SITE_URL}/blog/${blogPost.slug}`;
-          const greeting = subscriber.first_name ? `Hi ${subscriber.first_name},` : 'Hi there,';
+        const promises = batch.map(async (subscriber): Promise<SendResult> => {
+          const unsubscribeUrl = `${SITE_URL}/unsubscribe?token=${encodeURIComponent(subscriber.unsubscribe_token)}`;
+          const blogUrl = `${SITE_URL}/blog/${encodeURIComponent(blogPost.slug)}`;
+          const greeting = subscriber.first_name ? `Hi ${escapeHtml(subscriber.first_name)},` : 'Hi there,';
 
           const htmlContent = `
 <!DOCTYPE html>
@@ -81,7 +125,7 @@ serve(async (req: Request) => {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${blogPost.title}</title>
+    <title>${escapeHtml(blogPost.title)}</title>
   </head>
   <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: linear-gradient(135deg, #0B1E3F 0%, #1a3a5f 100%); padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0;">
@@ -90,8 +134,8 @@ serve(async (req: Request) => {
     </div>
     <div style="background: #ffffff; padding: 40px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin: 0 0 20px 0; font-size: 16px;">${greeting}</p>
-      <h2 style="color: #0B1E3F; margin: 0 0 20px 0; font-size: 24px;">${blogPost.title}</h2>
-      ${blogPost.excerpt ? `<p style="color: #6b7280; margin: 0 0 30px 0; font-size: 16px; line-height: 1.6;">${blogPost.excerpt}</p>` : ''}
+      <h2 style="color: #0B1E3F; margin: 0 0 20px 0; font-size: 24px;">${escapeHtml(blogPost.title)}</h2>
+      ${blogPost.excerpt ? `<p style="color: #6b7280; margin: 0 0 30px 0; font-size: 16px; line-height: 1.6;">${escapeHtml(blogPost.excerpt)}</p>` : ''}
       <div style="text-align: center; margin: 40px 0;">
         <a href="${blogUrl}" style="display: inline-block; background: #0B1E3F; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">Read Full Article</a>
       </div>
@@ -112,7 +156,7 @@ serve(async (req: Request) => {
             body: JSON.stringify({
               from: FROM_EMAIL,
               to: subscriber.email,
-              subject: `New Article: ${blogPost.title}`,
+              subject: `New Article: ${blogPost.title}`.replace(/[\r\n]+/g, ' '),
               html: htmlContent,
             }),
           });
@@ -120,10 +164,10 @@ serve(async (req: Request) => {
           if (!response.ok) {
             const errorText = await response.text();
             console.error(`Failed to send email to ${subscriber.email}:`, errorText);
-            return { email: subscriber.email, success: false, error: errorText, subscriber };
+            return { email: subscriber.email, success: false };
           }
 
-          return { email: subscriber.email, success: true, subscriber };
+          return { email: subscriber.email, success: true };
         });
 
         const batchResults = await Promise.all(promises);
@@ -147,31 +191,31 @@ serve(async (req: Request) => {
 
     // Route: POST /welcome (for new subscriber welcome emails)
     if (req.method === 'POST' && pathname.endsWith('/welcome')) {
-      const body = await req.json();
-      const { email, firstName } = body || {};
+      const body = await readJson(req);
+      if (!body) return jsonResponse({ error: 'Invalid JSON body' }, 400);
+      const email = typeof body.email === 'string' ? body.email.trim() : '';
 
       if (!email) {
-        return new Response(JSON.stringify({ error: 'Missing email' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        return jsonResponse({ error: 'Missing email' }, 400);
       }
 
       const { data: subscriber, error: subError } = await supabase
         .from('newsletter_subscribers')
-        .select('unsubscribe_token')
+        .select('unsubscribe_token, first_name, subscribed_at, is_active')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (subError || !subscriber) {
-        console.error('Could not find subscriber token:', subError);
-        return new Response(JSON.stringify({ error: 'Subscriber not found' }), {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+      if (subError) throw subError;
+
+      // Same response for "not found" and "not eligible" so the endpoint can't be
+      // used to probe which addresses are subscribed.
+      const subscribedAt = subscriber?.subscribed_at ? new Date(subscriber.subscribed_at).getTime() : 0;
+      if (!subscriber || !subscriber.is_active || Date.now() - subscribedAt > WELCOME_WINDOW_MS) {
+        return jsonResponse({ error: 'Subscriber not found' }, 404);
       }
 
-      const greeting = firstName ? `Hi ${firstName},` : 'Hi there,';
+      // Use the stored name, not the request body, so callers can't inject content.
+      const greeting = subscriber.first_name ? `Hi ${escapeHtml(subscriber.first_name)},` : 'Hi there,';
 
       const htmlContent = `
 <!DOCTYPE html>
@@ -203,7 +247,7 @@ serve(async (req: Request) => {
       </div>
       <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #e5e7eb;">
         <p style="color: #9ca3af; font-size: 14px; margin: 0 0 10px 0;">Have questions? Feel free to reply to this email or <a href="${SITE_URL}/contact" style="color: #0B1E3F; text-decoration: underline;">contact us</a>.</p>
-        <p style="color: #9ca3af; font-size: 14px; margin: 0;">If you didn't subscribe to this newsletter, you can <a href="${SITE_URL}/unsubscribe?token=${subscriber.unsubscribe_token}" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.</p>
+        <p style="color: #9ca3af; font-size: 14px; margin: 0;">If you didn't subscribe to this newsletter, you can <a href="${SITE_URL}/unsubscribe?token=${encodeURIComponent(subscriber.unsubscribe_token)}" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.</p>
       </div>
     </div>
   </body>
@@ -227,10 +271,7 @@ serve(async (req: Request) => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`Failed to send welcome email to ${email}:`, errorText);
-          return new Response(JSON.stringify({ error: 'Failed to send welcome email', details: errorText }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          return jsonResponse({ error: 'Failed to send welcome email' }, 502);
         }
 
         const result = await response.json();
@@ -253,7 +294,6 @@ serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Error:', error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return jsonResponse({ error: 'Internal server error' }, 500);
   }
 });

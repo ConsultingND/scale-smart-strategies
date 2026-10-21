@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Quote } from "lucide-react";
 
 const About = () => {
@@ -10,15 +9,10 @@ const About = () => {
     "AI is a tool, not a magic wand. Strategy matters.",
   ];
 
-  const [currentQuote, setCurrentQuote] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % quotes.length);
-    }, 24 * 60 * 60 * 1000); // Change once per day
-
-    return () => clearInterval(timer);
-  }, []);
+  // Rotate once per day, based on the day of the year
+  const now = new Date();
+  const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86_400_000);
+  const currentQuote = dayOfYear % quotes.length;
 
   return (
     <div className="min-h-screen pt-20">

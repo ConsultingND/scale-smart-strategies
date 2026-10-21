@@ -21,11 +21,12 @@ type Props = {
   contact: ContactInfoValue;
   submitState: 'idle' | 'submitting' | 'success' | 'error';
   errorMessage?: string;
+  onRetry?: () => void;
 };
 
 const CALENDLY_URL = 'https://calendly.com/solutions-ndscalesmart/30min';
 
-export default function ResultsPanel({ quiz, results, contact, submitState, errorMessage }: Props) {
+export default function ResultsPanel({ quiz, results, contact, submitState, errorMessage, onRetry }: Props) {
   const [mvpDialogOpen, setMvpDialogOpen] = useState(false);
   const [messyPrompt, setMessyPrompt] = useState('');
 
@@ -96,6 +97,11 @@ export default function ResultsPanel({ quiz, results, contact, submitState, erro
             <p className="text-destructive text-sm">
               {errorMessage ?? 'Something went wrong. Please try again.'}
             </p>
+            {onRetry ? (
+              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={onRetry}>
+                Try again
+              </Button>
+            ) : null}
           </div>
         ) : null}
 

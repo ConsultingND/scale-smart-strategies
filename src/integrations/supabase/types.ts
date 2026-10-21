@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_submissions: {
+        Row: {
+          ai_question: string | null
+          ai_question1: string | null
+          ai_question2: string | null
+          ai_question3: string | null
+          ai_question4: string | null
+          company: string | null
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string
+          project_type: string
+          submitted_at: string | null
+          website: string | null
+        }
+        Insert: {
+          ai_question?: string | null
+          ai_question1?: string | null
+          ai_question2?: string | null
+          ai_question3?: string | null
+          ai_question4?: string | null
+          company?: string | null
+          created_at?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message: string
+          project_type: string
+          submitted_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          ai_question?: string | null
+          ai_question1?: string | null
+          ai_question2?: string | null
+          ai_question3?: string | null
+          ai_question4?: string | null
+          company?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string
+          project_type?: string
+          submitted_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       newsletter_send_results: {
         Row: {
           id: string
@@ -83,12 +137,54 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_leads: {
+        Row: {
+          answers: Json
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          quiz: string
+          results: Json
+          submitted_at: string
+          utm: Json | null
+        }
+        Insert: {
+          answers: Json
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          quiz: string
+          results: Json
+          submitted_at?: string
+          utm?: Json | null
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          quiz?: string
+          results?: Json
+          submitted_at?: string
+          utm?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      unsubscribe_newsletter: {
+        Args: { p_token: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

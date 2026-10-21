@@ -35,8 +35,33 @@ type QuizLeadPayload = {
   submittedAt?: string;
 };
 
+const MAX_BODY_BYTES = 64 * 1024;
+const EMAIL_RE = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+
+const isString = (v: unknown): v is string => typeof v === 'string';
+
+const isValidResults = (r: unknown): r is Results => {
+  if (!r || typeof r !== 'object') return false;
+  const { recommendation, dimensions, adminNotes } = r as Results;
+  return (
+    !!recommendation &&
+    isString(recommendation.headline) &&
+    isString(recommendation.body) &&
+    (recommendation.tag == null || isString(recommendation.tag)) &&
+    Array.isArray(dimensions) &&
+    dimensions.every((d) => d && isString(d.label) && Number.isFinite(Number(d.score))) &&
+    (adminNotes == null || (Array.isArray(adminNotes) && adminNotes.every(isString)))
+  );
+};
+
 const escape = (s: string): string =>
-  s
+  String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -45,7 +70,7 @@ const escape = (s: string): string =>
 
 const formatAnswerValue = (v: unknown): string => {
   if (v == null) return '—';
-  if (Array.isArray(v)) return v.map((x) => String(x)).join(', ');
+  if (Array.isArray(v)) return escape(v.map((x) => String(x)).join(', '));
   if (typeof v === 'object') return `<pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${escape(JSON.stringify(v, null, 2))}</pre>`;
   return escape(String(v));
 };
@@ -57,7 +82,7 @@ const dimensionsBlock = (dims: ScoreDimension[]): string => `
         (d) => `
       <tr>
         <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>${escape(d.label)}</strong></td>
-        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right; font-variant-numeric: tabular-nums;">${Math.round(d.score * 100)} / 100</td>
+        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right; font-variant-numeric: tabular-nums;">${Math.round(Number(d.score) * 100)} / 100</td>
       </tr>`,
       )
       .join('')}
@@ -90,28 +115,43 @@ serve(async (req: Request) => {
     const ADMIN_EMAIL = 'solutions@ndscalesmart.com';
 
     if (req.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-        status: 405,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return jsonResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const payload = (await req.json()) as QuizLeadPayload;
-    const { quiz, contact, answers, results } = payload;
+    const rawBody = await req.text();
+    if (rawBody.length > MAX_BODY_BYTES) {
+      return jsonResponse({ error: 'Payload too large' }, 413);
+    }
 
-    if (!quiz || !contact?.firstName || !contact?.lastName || !contact?.email || !results) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    let payload: QuizLeadPayload;
+    try {
+      payload = JSON.parse(rawBody) as QuizLeadPayload;
+    } catch {
+      return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    }
+    const { quiz, contact, results } = payload ?? ({} as QuizLeadPayload);
+    const answers = payload?.answers && typeof payload.answers === 'object' ? payload.answers : {};
+
+    if (
+      (quiz !== 'beginner' && quiz !== 'expert') ||
+      !isString(contact?.firstName) || !contact.firstName ||
+      !isString(contact?.lastName) || !contact.lastName ||
+      !isString(contact?.email) || !contact.email
+    ) {
+      return jsonResponse({ error: 'Missing required fields' }, 400);
+    }
+
+    if (!EMAIL_RE.test(contact.email) || contact.firstName.length > 200 || contact.lastName.length > 200) {
+      return jsonResponse({ error: 'Invalid contact details' }, 400);
+    }
+
+    if (!isValidResults(results)) {
+      return jsonResponse({ error: 'Invalid results' }, 400);
     }
 
     if (contact.honeypot) {
       // Bot trap — pretend success so the bot doesn't retry
-      return new Response(JSON.stringify({ message: 'ok' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return jsonResponse({ message: 'ok' }, 200);
     }
 
     if (!RESEND_API_KEY) {
@@ -121,10 +161,7 @@ serve(async (req: Request) => {
         quiz,
         recommendation: results.recommendation.headline,
       });
-      return new Response(JSON.stringify({ message: 'logged (no RESEND_API_KEY)' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return jsonResponse({ message: 'logged (no RESEND_API_KEY)' }, 200);
     }
 
     const quizLabel = quiz === 'beginner' ? 'Business → App Discovery' : 'Technical Audit';
@@ -209,8 +246,8 @@ serve(async (req: Request) => {
         body: JSON.stringify({
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
-          replyTo: contact.email,
-          subject: `New ${quizLabel} lead: ${contact.firstName} ${contact.lastName} (${contact.company})`,
+          reply_to: contact.email,
+          subject: `New ${quizLabel} lead: ${contact.firstName} ${contact.lastName}`.replace(/[\r\n]+/g, ' '),
           html: adminHtml,
         }),
       }),
@@ -225,22 +262,12 @@ serve(async (req: Request) => {
         ),
       );
       console.error('[send-quiz-email] partial failure:', errors.filter(Boolean));
-      return new Response(
-        JSON.stringify({ error: 'Failed to send some emails', details: errors.filter(Boolean) }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Failed to send some emails' }, 502);
     }
 
-    return new Response(JSON.stringify({ message: 'Quiz lead emails sent', sent: 2 }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ message: 'Quiz lead emails sent', sent: 2 }, 200);
   } catch (error) {
     console.error('[send-quiz-email] error:', error);
-    const message = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ error: 'Internal server error' }, 500);
   }
 });
